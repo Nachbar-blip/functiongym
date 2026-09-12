@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trigonometrische Funktionen — FunctionGym</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="../fit.css">
+<style>
+  :root { --fit-primary: #0891b2; --fit-secondary: #0e7490; }
+  /* Eigenschaften-Tabellen: klein und mobil scrollbar.
+     position:relative, damit absolut positionierte KaTeX-MathML-Teile
+     innerhalb des scrollbaren Wrappers geclippt werden */
+  .eigen-tabelle-wrap { overflow-x: auto; max-width: 100%; position: relative; }
+  .eigen-tabelle { border-collapse: collapse; font-size: 0.85rem; margin: 0.5em 0; }
+  .eigen-tabelle th, .eigen-tabelle td { border: 1px solid #d0d7e2; padding: 4px 8px; text-align: center; }
+  .eigen-tabelle th { background: #e0f4f9; }
+  /* KaTeX-Spans in Zuordnungs-Buttons duerfen Klicks auf
+     Nachbar-Buttons nicht abfangen (ueberstehende Struts) */
+  .fit-zuordnung button * { pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const THEMA_KEY = 'fitgym-trigonometrie';
+const THEMA_CONFIG = { name: 'Trigonometrische Funktionen' };
+
+// ── Eingangscheck ───────────────────────────────────────────
+const DIAGNOSE = [
+  { typ: 'mc',
+    frage: 'Was ist die Periode der Funktion \\(f(x) = \\sin(x)\\) (im Bogenmaß)?',
+    optionen: [
+      '\\(2\\pi\\)',
+      '\\(\\pi\\)',
+      '\\(360\\)',
+      '\\(1\\)'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Die Sinusfunktion wiederholt sich nach einem vollen Umlauf im Einheitskreis. Ein voller Umlauf entspricht im Bogenmaß \\(2\\pi\\) (in Grad wären das 360°, aber hier ist das Bogenmaß gefragt).' },
+  { typ: 'numerisch',
+    frage: 'Berechne \\(\\sin(90°)\\).',
+    loesung: 1,
+    loesungsweg: 'Bei 90° zeigt der Punkt auf dem Einheitskreis genau nach oben: \\((0\\,|\\,1)\\). Der Sinus ist die y-Koordinate, also \\(\\sin(90°) = 1\\).' },
+  { typ: 'mc',
+    frage: 'Welche Symmetrie hat der Graph von \\(g(x) = \\cos(x)\\)?',
+    optionen: [
+      'achsensymmetrisch zur y-Achse',
+      'punktsymmetrisch zum Ursprung',
+      'keine Symmetrie',
+      'achsensymmetrisch zur x-Achse'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Es gilt \\(\\cos(-x) = \\cos(x)\\) — z. B. \\(\\cos(-60°) = \\cos(60°) = 0{,}5\\). Der Graph ist also achsensymmetrisch zur y-Achse. (Punktsymmetrisch zum Ursprung ist der Sinus.)' },
+  { typ: 'numerisch',
+    frage: 'Wie viel Grad entsprechen dem Bogenmaß \\(\\dfrac{\\pi}{2}\\)?',
+    loesung: 90,
+    loesungsweg: 'Umrechnung: \\(\\alpha = \\dfrac{x}{\\pi} \\cdot 180° = \\dfrac{\\pi/2}{\\pi} \\cdot 180° = \\dfrac{1}{2} \\cdot 180° = 90°\\).' }
+];
+
+// ── Technik (Theorie) ───────────────────────────────────────
+const THEORIE = [
+  { titel: 'Sinus und Kosinus als Funktionen',
+    html: `
+<p>Am <strong>Einheitskreis</strong> (Radius 1) gehört zu jedem Winkel ein Punkt: Seine y-Koordinate ist der <strong>Sinus</strong>, seine x-Koordinate der <strong>Kosinus</strong>. Lässt du den Winkel \\(x\\) laufen und trägst die Werte auf, entstehen die Graphen von</p>
+<p>$$f(x) = \\sin(x) \\qquad \\text{und} \\qquad g(x) = \\cos(x) $$</p>
+<svg viewBox="0 0 340 200" role="img" aria-label="Sinus- und Kosinuskurve über eine Periode" style="max-width:100%;height:auto;display:block;margin:0.5em auto;">
+  <g stroke="#d0d7e2" stroke-width="1">
+    <line x1="105" y1="20" x2="105" y2="180"/><line x1="180" y1="20" x2="180" y2="180"/>
+    <line x1="255" y1="20" x2="255" y2="180"/><line x1="330" y1="20" x2="330" y2="180"/>
+    <line x1="20" y1="40" x2="335" y2="40"/><line x1="20" y1="160" x2="335" y2="160"/>
+  </g>
+  <g stroke="#333" stroke-width="1.5">
+    <line x1="20" y1="100" x2="335" y2="100"/>
+    <line x1="30" y1="185" x2="30" y2="15"/>
+  </g>
+  <polygon points="335,100 326,96 326,104" fill="#333"/>
+  <polygon points="30,15 26,24 34,24" fill="#333"/>
+  <text x="14" y="44" font-size="11" fill="#333">1</text>
+  <text x="8" y="164" font-size="11" fill="#333">−1</text>
+  <text x="98" y="196" font-size="11" fill="#333">π/2</text>
+  <text x="176" y="196" font-size="11" fill="#333">π</text>
+  <text x="244" y="196" font-size="11" fill="#333">3π/2</text>
+  <text x="322" y="196" font-size="11" fill="#333">2π</text>
+  <polyline fill="none" stroke="var(--fit-primary)" stroke-width="2.5" points="30.0,100.0 35.0,93.7 40.0,87.5 45.0,81.5 50.0,75.6 55.0,70.0 60.0,64.7 65.0,59.9 70.0,55.4 75.0,51.5 80.0,48.0 85.0,45.2 90.0,42.9 95.0,41.3 100.0,40.3 105.0,40.0 110.0,40.3 115.0,41.3 120.0,42.9 125.0,45.2 130.0,48.0 135.0,51.5 140.0,55.4 145.0,59.9 150.0,64.7 155.0,70.0 160.0,75.6 165.0,81.5 170.0,87.5 175.0,93.7 180.0,100.0 185.0,106.3 190.0,112.5 195.0,118.5 200.0,124.4 205.0,130.0 210.0,135.3 215.0,140.1 220.0,144.6 225.0,148.5 230.0,152.0 235.0,154.8 240.0,157.1 245.0,158.7 250.0,159.7 255.0,160.0 260.0,159.7 265.0,158.7 270.0,157.1 275.0,154.8 280.0,152.0 285.0,148.5 290.0,144.6 295.0,140.1 300.0,135.3 305.0,130.0 310.0,124.4 315.0,118.5 320.0,112.5 325.0,106.3 330.0,100.0"/>
+  <polyline fill="none" stroke="var(--fit-secondary)" stroke-width="2.5" stroke-dasharray="6 4" points="30.0,40.0 35.0,40.3 40.0,41.3 45.0,42.9 50.0,45.2 55.0,48.0 60.0,51.5 65.0,55.4 70.0,59.9 75.0,64.7 80.0,70.0 85.0,75.6 90.0,81.5 95.0,87.5 100.0,93.7 105.0,100.0 110.0,106.3 115.0,112.5 120.0,118.5 125.0,124.4 130.0,130.0 135.0,135.3 140.0,140.1 145.0,144.6 150.0,148.5 155.0,152.0 160.0,154.8 165.0,157.1 170.0,158.7 175.0,159.7 180.0,160.0 185.0,159.7 190.0,158.7 195.0,157.1 200.0,154.8 205.0,152.0 210.0,148.5 215.0,144.6 220.0,140.1 225.0,135.3 230.0,130.0 235.0,124.4 240.0,118.5 245.0,112.5 250.0,106.3 255.0,100.0 260.0,93.7 265.0,87.5 270.0,81.5 275.0,75.6 280.0,70.0 285.0,64.7 290.0,59.9 295.0,55.4 300.0,51.5 305.0,48.0 310.0,45.2 315.0,42.9 320.0,41.3 325.0,40.3 330.0,40.0"/>
+  <text x="46" y="60" font-size="12" fill="var(--fit-primary)">sin(x)</text>
+  <text x="118" y="140" font-size="12" fill="var(--fit-secondary)">cos(x)</text>
+</svg>
+<p>Die wichtigsten Eigenschaften im Überblick:</p>
+<div class="eigen-tabelle-wrap"><table class="eigen-tabelle">
+  <tr><th></th><th>\\(\\sin(x)\\)</th><th>\\(\\cos(x)\\)</th></tr>
+  <tr><td>Definitionsbereich</td><td>\\(\\mathbb{R}\\)</td><td>\\(\\mathbb{R}\\)</td></tr>
+  <tr><td>Wertebereich</td><td>\\([-1;\\,1]\\)</td><td>\\([-1;\\,1]\\)</td></tr>
+  <tr><td>Periode</td><td>\\(2\\pi\\) bzw. 360°</td><td>\\(2\\pi\\) bzw. 360°</td></tr>
+  <tr><td>Amplitude</td><td>1</td><td>1</td></tr>
+  <tr><td>Symmetrie</td><td>punktsymmetrisch zum Ursprung</td><td>achsensymmetrisch zur y-Achse</td></tr>
+</table></div>
+<p>Die Kosinuskurve ist eine um \\(\\frac{\\pi}{2}\\) nach links verschobene Sinuskurve — beide Graphen haben dieselbe Form.</p>` },
+  { titel: 'Grad- und Bogenmaß',
+    html: `
+<p>Winkel kannst du in <strong>Grad</strong> (voller Kreis = 360°) oder im <strong>Bogenmaß</strong> (voller Kreis = \\(2\\pi\\), die Länge des Einheitskreis-Bogens) angeben. Die Umrechnung:</p>
+<p>$$x_{\\text{rad}} = \\frac{\\alpha}{180°} \\cdot \\pi \\qquad\\qquad \\alpha = \\frac{x_{\\text{rad}}}{\\pi} \\cdot 180° $$</p>
+<div class="eigen-tabelle-wrap"><table class="eigen-tabelle">
+  <tr><th>Grad</th><td>0°</td><td>30°</td><td>45°</td><td>60°</td><td>90°</td><td>180°</td><td>270°</td><td>360°</td></tr>
+  <tr><th>Bogenmaß</th><td>0</td><td>\\(\\frac{\\pi}{6}\\)</td><td>\\(\\frac{\\pi}{4}\\)</td><td>\\(\\frac{\\pi}{3}\\)</td><td>\\(\\frac{\\pi}{2}\\)</td><td>\\(\\pi\\)</td><td>\\(\\frac{3\\pi}{2}\\)</td><td>\\(2\\pi\\)</td></tr>
+</table></div>
+<p><strong>Beispiel Grad → Bogenmaß:</strong> \\(120° = \\dfrac{120°}{180°} \\cdot \\pi = \\dfrac{2\\pi}{3}\\)</p>
+<p><strong>Beispiel Bogenmaß → Grad:</strong> \\(\\dfrac{5\\pi}{6} = \\dfrac{5\\pi/6}{\\pi} \\cdot 180° = \\dfrac{5}{6} \\cdot 180° = 150°\\)</p>` },
+  { titel: 'Wichtige Werte',
+    html: `
+<p>Diese Werte solltest du auswendig kennen — sie sind die Schnitt- und Extrempunkte der Graphen:</p>
+<div class="eigen-tabelle-wrap"><table class="eigen-tabelle">
+  <tr><th>\\(x\\)</th><td>0°</td><td>90°</td><td>180°</td><td>270°</td><td>360°</td></tr>
+  <tr><th>\\(\\sin(x)\\)</th><td>0</td><td>1</td><td>0</td><td>−1</td><td>0</td></tr>
+  <tr><th>\\(\\cos(x)\\)</th><td>1</td><td>0</td><td>−1</td><td>0</td><td>1</td></tr>
+</table></div>
+<ul>
+  <li>\\(\\sin(x) = 0\\) bei \\(0°,\\ 180°,\\ 360°,\\ \\dots\\) — also bei allen Vielfachen von 180° (\\(k \\cdot \\pi\\)).</li>
+  <li>\\(\\sin(x) = \\pm 1\\) bei \\(90°\\) (Maximum) und \\(270°\\) (Minimum).</li>
+  <li>\\(\\cos(x) = 0\\) bei \\(90°,\\ 270°,\\ \\dots\\) — genau zwischen den Nullstellen des Sinus.</li>
+  <li>\\(\\cos(x) = \\pm 1\\) bei \\(0°\\) und \\(360°\\) (Maximum) bzw. \\(180°\\) (Minimum).</li>
+</ul>` },
+  { titel: 'Amplitude, Periode, Verschiebung',
+    html: `
+<p>Die allgemeine Sinusfunktion hat vier Stellschrauben:</p>
+<p>$$f(x) = a \\cdot \\sin\\bigl(b\\,(x - c)\\bigr) + d $$</p>
+<ul>
+  <li><strong>Amplitude \\(|a|\\):</strong> Höhe des Ausschlags von der Mittellinie. Beispiel: \\(f(x) = 3\\sin(x)\\) schwankt zwischen −3 und 3, die Amplitude ist 3. Bei negativem \\(a\\) ist der Graph zusätzlich an der Mittellinie gespiegelt — die Amplitude bleibt \\(|a|\\).</li>
+  <li><strong>Periode \\(\\dfrac{2\\pi}{b}\\):</strong> \\(b\\) staucht oder streckt in x-Richtung. Beispiel: \\(f(x) = \\sin(2x)\\) hat die Periode \\(\\frac{2\\pi}{2} = \\pi\\) — die Kurve schwingt doppelt so schnell.</li>
+  <li><strong>Verschiebung \\(c\\) nach rechts:</strong> Beispiel: \\(f(x) = \\sin\\bigl(x - \\frac{\\pi}{4}\\bigr)\\) ist die Sinuskurve, um \\(\\frac{\\pi}{4}\\) nach rechts geschoben.</li>
+  <li><strong>Verschiebung \\(d\\) nach oben:</strong> Beispiel: \\(f(x) = \\sin(x) + 2\\) schwankt zwischen 1 und 3.</li>
+</ul>
+<p><strong>Merke:</strong> Die <strong>Mittellinie</strong> des Graphen ist die waagerechte Gerade \\(y = d\\). Der Wertebereich ist dann \\([d - |a|;\\ d + |a|]\\).</p>` }
+];
+
+// ── Workout ─────────────────────────────────────────────────
+const AUFGABEN = [
+  // Stufe 1
+  { id: 1, stufe: 1, typ: 'numerisch',
+    frage: 'Rechne \\(90°\\) ins Bogenmaß um. Das Ergebnis hat die Form \\(x = k \\cdot \\pi\\). Gib den Faktor \\(k\\) an (Bruch wie 1/2 oder Dezimalzahl möglich).',
+    loesung: 0.5,
+    tipp: 'Umrechnungsformel: \\(x = \\dfrac{\\alpha}{180°} \\cdot \\pi\\). Welcher Bruch entsteht aus \\(\\frac{90}{180}\\)?',
+    loesungsweg: '\\(x = \\dfrac{90°}{180°} \\cdot \\pi = \\dfrac{1}{2}\\pi\\). Also ist \\(k = \\dfrac{1}{2} = 0{,}5\\).' },
+  { id: 2, stufe: 1, typ: 'numerisch',
+    frage: 'Rechne das Bogenmaß \\(\\dfrac{3\\pi}{2}\\) in Grad um.',
+    loesung: 270,
+    tipp: 'Umrechnungsformel: \\(\\alpha = \\dfrac{x}{\\pi} \\cdot 180°\\). Das \\(\\pi\\) kürzt sich heraus.',
+    loesungsweg: '\\(\\alpha = \\dfrac{3\\pi/2}{\\pi} \\cdot 180° = \\dfrac{3}{2} \\cdot 180° = 270°\\).' },
+  { id: 3, stufe: 1, typ: 'zuordnung',
+    frage: 'Ordne jedem Winkel das passende Bogenmaß zu.',
+    paare: [
+      { links: '\\(60°\\)', rechts: '\\(\\frac{\\pi}{3}\\)' },
+      { links: '\\(45°\\)', rechts: '\\(\\frac{\\pi}{4}\\)' },
+      { links: '\\(180°\\)', rechts: '\\(\\pi\\)' },
+      { links: '\\(360°\\)', rechts: '\\(2\\pi\\)' }
+    ],
+    tipp: 'Merke dir \\(180° = \\pi\\) — alle anderen Werte bekommst du durch Teilen oder Verdoppeln.',
+    loesungsweg: 'Ausgehend von \\(180° = \\pi\\): \\(60° = \\frac{180°}{3} = \\frac{\\pi}{3}\\), \\(45° = \\frac{180°}{4} = \\frac{\\pi}{4}\\), \\(360° = 2 \\cdot 180° = 2\\pi\\).' },
+  { id: 4, stufe: 1, typ: 'numerisch',
+    frage: 'Berechne \\(\\cos(180°)\\).',
+    loesung: -1,
+    tipp: 'Bei 180° liegt der Punkt auf dem Einheitskreis ganz links. Der Kosinus ist seine x-Koordinate.',
+    loesungsweg: 'Bei 180° ist der Punkt auf dem Einheitskreis \\((-1\\,|\\,0)\\). Der Kosinus ist die x-Koordinate, also \\(\\cos(180°) = -1\\).' },
+  { id: 5, stufe: 1, typ: 'mc',
+    frage: 'Für welche Winkel im Bereich \\([0°;\\,360°]\\) gilt \\(\\sin(x) = 0\\)?',
+    optionen: [
+      '\\(0°,\\ 180°,\\ 360°\\)',
+      '\\(90°,\\ 270°\\)',
+      'nur \\(0°\\)',
+      '\\(0°,\\ 90°,\\ 180°\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Die Sinuskurve startet bei 0, geht hoch, kommt zurück, geht runter, kommt wieder zurück. Wo schneidet sie die x-Achse?',
+    loesungsweg: 'Die Nullstellen des Sinus liegen bei allen Vielfachen von 180°: \\(\\sin(0°) = 0\\), \\(\\sin(180°) = 0\\), \\(\\sin(360°) = 0\\). Bei 90° und 270° hat der Sinus dagegen seine Extremwerte \\(1\\) bzw. \\(-1\\).' },
+  { id: 6, stufe: 1, typ: 'numerisch',
+    frage: 'Gib die Amplitude der Funktion \\(f(x) = 4\\sin(x)\\) an.',
+    loesung: 4,
+    tipp: 'Die Amplitude ist der Betrag des Faktors vor dem Sinus.',
+    loesungsweg: 'In \\(f(x) = a \\cdot \\sin(x)\\) ist die Amplitude \\(|a|\\). Hier ist \\(a = 4\\), also Amplitude 4 — der Graph schwankt zwischen \\(-4\\) und \\(4\\).' },
+  // Stufe 2
+  { id: 7, stufe: 2, typ: 'numerisch',
+    frage: 'Bestimme die Periode von \\(f(x) = \\sin(3x)\\). Das Ergebnis hat die Form \\(k \\cdot \\pi\\). Gib den Faktor \\(k\\) an (Bruch wie 2/3 oder gerundeter Dezimalwert möglich).',
+    loesung: 0.6666666666666666,
+    toleranz: 0.01,
+    tipp: 'Periodenformel: \\(p = \\dfrac{2\\pi}{b}\\) mit \\(b = 3\\).',
+    loesungsweg: '\\(p = \\dfrac{2\\pi}{b} = \\dfrac{2\\pi}{3} = \\dfrac{2}{3}\\pi\\). Also \\(k = \\dfrac{2}{3} \\approx 0{,}67\\). Die Kurve schwingt dreimal so schnell wie \\(\\sin(x)\\).' },
+  { id: 8, stufe: 2, typ: 'mc',
+    frage: 'Welche Aussagenkombination beschreibt \\(f(x) = 2\\sin(x) + 1\\) vollständig richtig?',
+    optionen: [
+      'Amplitude 2, Mittellinie \\(y = 1\\), Wertebereich \\([-1;\\,3]\\)',
+      'Amplitude 2, Mittellinie \\(y = 1\\), Wertebereich \\([-2;\\,2]\\)',
+      'Amplitude 1, Mittellinie \\(y = 2\\), Wertebereich \\([1;\\,3]\\)',
+      'Amplitude 3, Mittellinie \\(y = 0\\), Wertebereich \\([-3;\\,3]\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Vergleiche mit \\(a \\cdot \\sin(x) + d\\): \\(a\\) ist die Amplitude, \\(y = d\\) die Mittellinie. Der Wertebereich ist \\([d - |a|;\\ d + |a|]\\).',
+    loesungsweg: 'Hier ist \\(a = 2\\) (Amplitude 2) und \\(d = 1\\) (Mittellinie \\(y = 1\\)). Wertebereich: \\([1 - 2;\\ 1 + 2] = [-1;\\,3]\\). Kontrolle: \\(\\sin(x)\\) liegt zwischen \\(-1\\) und \\(1\\), also liegt \\(2\\sin(x) + 1\\) zwischen \\(2 \\cdot (-1) + 1 = -1\\) und \\(2 \\cdot 1 + 1 = 3\\).' },
+  { id: 9, stufe: 2, typ: 'numerisch',
+    frage: 'Gib die Amplitude der Funktion \\(f(x) = -3\\cos(2x) + 1\\) an.',
+    loesung: 3,
+    tipp: 'Die Amplitude ist der <em>Betrag</em> des Faktors vor dem Kosinus — das Minuszeichen spiegelt nur den Graphen.',
+    loesungsweg: 'In \\(f(x) = a \\cdot \\cos(b\\,x) + d\\) ist die Amplitude \\(|a| = |-3| = 3\\). Das negative Vorzeichen spiegelt den Graphen an der Mittellinie \\(y = 1\\), ändert aber nichts an der Ausschlaghöhe. (Das \\(b = 2\\) beeinflusst nur die Periode.)' },
+  { id: 10, stufe: 2, typ: 'mc',
+    frage: 'Die Sinuskurve wird um \\(\\dfrac{\\pi}{2}\\) nach <strong>rechts</strong> verschoben. Welche Gleichung gehört zum neuen Graphen?',
+    optionen: [
+      '\\(y = \\sin\\bigl(x - \\frac{\\pi}{2}\\bigr)\\)',
+      '\\(y = \\sin\\bigl(x + \\frac{\\pi}{2}\\bigr)\\)',
+      '\\(y = \\sin(x) - \\frac{\\pi}{2}\\)',
+      '\\(y = \\cos(x)\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Verschiebung nach rechts um \\(c\\) heißt: \\(x\\) wird durch \\(x - c\\) ersetzt (Minuszeichen in der Klammer!).',
+    loesungsweg: 'Verschiebung um \\(c = \\frac{\\pi}{2}\\) nach rechts: \\(y = \\sin\\bigl(x - \\frac{\\pi}{2}\\bigr)\\). Achtung bei den Distraktoren: \\(\\sin\\bigl(x + \\frac{\\pi}{2}\\bigr)\\) verschiebt nach <em>links</em> (das ergibt gerade \\(\\cos(x)\\)), \\(\\sin(x) - \\frac{\\pi}{2}\\) verschiebt nach <em>unten</em>. Die richtige Funktion ist übrigens \\(-\\cos(x)\\) — nicht \\(\\cos(x)\\).' }
+];
+</script>
+<script src="../fit-engine.js"></script>
+</body>
+</html>
