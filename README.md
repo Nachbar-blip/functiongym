@@ -12,3 +12,9 @@ FunctionGym/
 ├── gym/            # Themen-Seiten (eine HTML-Datei pro Thema)
 └── tests/          # Tests
 ```
+
+## Tests
+
+Playwright-Testsuite: prüft jede Themen-Seite in `gym/` statisch (Datenqualität, KaTeX, JS-Fehler) und interaktiv (Diagnose + Workout Stufe 1 komplett durchspielen).
+Installation: `pip install -r tests/requirements.txt` (einmalig zusätzlich `playwright install chromium`).
+Ausführung: `cd tests && pytest` — HTML-Report landet in `tests/reports/`.
