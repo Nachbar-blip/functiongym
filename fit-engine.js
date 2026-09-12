@@ -44,6 +44,14 @@
     } catch (e) {
       state = JSON.parse(JSON.stringify(DEFAULT_STATE));
     }
+    // Korrupte Altwerte absichern, sonst crasht der Merge unten
+    if (typeof state !== 'object' || state === null || Array.isArray(state)) {
+      state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+    if (typeof state.diagnose !== 'object' || state.diagnose === null || Array.isArray(state.diagnose)) {
+      state.diagnose = JSON.parse(JSON.stringify(DEFAULT_STATE.diagnose));
+    }
+    if (!Array.isArray(state.answered)) state.answered = [];
     // fehlende Felder ergänzen (auch verschachtelt)
     for (const key of Object.keys(DEFAULT_STATE)) {
       if (state[key] === undefined) state[key] = JSON.parse(JSON.stringify(DEFAULT_STATE[key]));
@@ -65,7 +73,8 @@
 
   // Deutsche Komma-Schreibweise, Tausenderpunkte und Brucheingabe "a/b"
   function parseZahl(roh) {
-    roh = String(roh).trim().replace(/\s+/g, '');
+    // Unicode-Minus (U+2212) wie normales Minus behandeln
+    roh = String(roh).trim().replace(/\s+/g, '').replace(/−/g, '-');
     if (roh === '') return [];
     // Bruch a/b (Zähler/Nenner jeweils auch dezimal, Minus erlaubt)
     const bruch = roh.match(/^(-?\d+(?:[.,]\d+)?)\/(-?\d+(?:[.,]\d+)?)$/);
@@ -225,9 +234,8 @@
     feedbackShown = false;
     currentAufgabe = null;
     if (ziel === 'diagnose') {
-      phase = state.diagnose.done ? 'empfehlung' : 'diagnose';
-      if (phase === 'diagnose') { diagnoseIndex = 0; renderDiagnose(); }
-      else renderEmpfehlung();
+      if (state.diagnose.done) { phase = 'empfehlung'; renderEmpfehlung(); }
+      else startDiagnose();
     } else if (ziel === 'theorie') {
       phase = 'theorie';
       renderTheorie();
@@ -238,6 +246,16 @@
   }
 
   // ── Phase 1: Eingangscheck ──────────────────────────────────
+
+  // Zähler beim (Neu-)Start nullen — sonst verfälscht ein Abbruch
+  // mitten in der Diagnose nach Reload die Quote (gesamt > DIAGNOSE.length)
+  function startDiagnose() {
+    state.diagnose = { richtig: 0, gesamt: 0, done: false };
+    saveState();
+    diagnoseIndex = 0;
+    phase = 'diagnose';
+    renderDiagnose();
+  }
 
   function renderDiagnose() {
     if (diagnoseIndex >= DIAGNOSE.length) {
@@ -285,13 +303,7 @@
     </div>`);
     document.getElementById('btnTechnik').addEventListener('click', () => gotoPhase('theorie'));
     document.getElementById('btnWorkout').addEventListener('click', () => gotoPhase('workout'));
-    document.getElementById('btnDiagnoseNeu').addEventListener('click', () => {
-      state.diagnose = { richtig: 0, gesamt: 0, done: false };
-      saveState();
-      diagnoseIndex = 0;
-      phase = 'diagnose';
-      renderDiagnose();
-    });
+    document.getElementById('btnDiagnoseNeu').addEventListener('click', startDiagnose);
   }
 
   // ── Phase 2: Technik-Training ───────────────────────────────
@@ -304,11 +316,8 @@
       <div style="text-align:center;margin-bottom:20px">
         <button class="fit-btn" id="btnZumWorkout">Weiter zum Workout &rarr;</button>
       </div>`);
-    document.getElementById('btnZumWorkout').addEventListener('click', () => {
-      state.theorieGesehen = true;
-      saveState();
-      gotoPhase('workout');
-    });
+    document.getElementById('btnZumWorkout').addEventListener('click', () => gotoPhase('workout'));
+    if (!state.theorieGesehen) { state.theorieGesehen = true; saveState(); }
   }
 
   // ── Phase 3: Workout ────────────────────────────────────────
@@ -525,7 +534,7 @@
 
   function updateZuordnungUI() {
     const z = zuordnungState;
-    const paarNr = {}; // rechtsIndex → Badge-Nummer
+    const paarNr = {}; // linksIndex → Badge-Nummer
     Object.keys(z.pairs).forEach((li, n) => { paarNr[li] = n + 1; });
 
     document.querySelectorAll('.fit-zuordnung-links button').forEach(btn => {
@@ -693,8 +702,7 @@
       phase = 'empfehlung';
       renderEmpfehlung();
     } else {
-      phase = 'diagnose';
-      renderDiagnose();
+      startDiagnose();
     }
   }
 
