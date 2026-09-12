@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Potenz- und Wurzelfunktionen — FunctionGym</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="../fit.css">
+<style>
+  :root { --fit-primary: #ea580c; --fit-secondary: #d97706; }
+  /* Eigenschaften-Tabelle: klein und mobil scrollbar */
+  /* position:relative, damit absolut positionierte KaTeX-MathML-Teile
+     innerhalb des scrollbaren Wrappers geclippt werden */
+  .eigen-tabelle-wrap { overflow-x: auto; max-width: 100%; position: relative; }
+  .eigen-tabelle { border-collapse: collapse; font-size: 0.85rem; margin: 0.5em 0; }
+  .eigen-tabelle th, .eigen-tabelle td { border: 1px solid #d0d7e2; padding: 4px 8px; text-align: center; }
+  .eigen-tabelle th { background: #fff3e8; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const THEMA_KEY = 'fitgym-potenz';
+const THEMA_CONFIG = { name: 'Potenz- und Wurzelfunktionen' };
+
+// ── Eingangscheck ───────────────────────────────────────────
+const DIAGNOSE = [
+  { typ: 'mc',
+    frage: 'Wie sieht der Graph von \\(f(x) = x^3\\) aus?',
+    optionen: [
+      'Er verläuft durch den Ursprung, steigt und ist punktsymmetrisch zum Ursprung',
+      'Er hat eine U-Form und ist achsensymmetrisch zur y-Achse',
+      'Er besteht aus zwei Ästen (Hyperbel) mit Lücke bei \\(x = 0\\)',
+      'Er ist eine Halbgerade, die nur rechts von der y-Achse existiert'
+    ],
+    korrekt: 0,
+    loesungsweg: '\\(x^3\\) hat einen ungeraden Exponenten: Der Graph ist punktsymmetrisch zum Ursprung, verläuft durch \\((0\\,|\\,0)\\) und steigt (S-Form). Die U-Form gehört zu \\(x^2\\), die Hyperbel zu \\(x^{-1}\\), die Halbgerade zu \\(\\sqrt{x}\\).' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = x^4\\). Berechne \\(f(-2)\\).',
+    loesung: 16,
+    loesungsweg: '\\(f(-2) = (-2)^4 = (-2) \\cdot (-2) \\cdot (-2) \\cdot (-2) = 16\\). Gerader Exponent: Das Ergebnis ist positiv.' },
+  { typ: 'mc',
+    frage: 'Was ist der Definitionsbereich von \\(f(x) = \\sqrt{x}\\)?',
+    optionen: [
+      '\\(D = [0;\\infty[\\) — alle Zahlen \\(x \\geq 0\\)',
+      '\\(D = \\mathbb{R}\\) — alle reellen Zahlen',
+      '\\(D = \\;]0;\\infty[\\) — alle Zahlen \\(x > 0\\)'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Unter der Wurzel darf keine negative Zahl stehen, also \\(x \\geq 0\\). Die Null ist erlaubt: \\(\\sqrt{0} = 0\\). Damit ist \\(D = [0;\\infty[\\).' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = x^{-2}\\). Berechne \\(f(-1)\\).',
+    loesung: 1,
+    loesungsweg: '\\(f(-1) = (-1)^{-2} = \\frac{1}{(-1)^2} = \\frac{1}{1} = 1\\). Negativer Exponent heißt: Kehrwert der Potenz bilden.' }
+];
+
+// ── Technik (Theorie) ───────────────────────────────────────
+const THEORIE = [
+  { titel: 'Potenzfunktionen f(x) = xⁿ',
+    html: `
+<p>Eine <strong>Potenzfunktion</strong> hat die Form \\(f(x) = x^n\\). Wie ihr Graph aussieht, hängt vom Exponenten \\(n\\) ab — es gibt <strong>vier Grundtypen</strong>:</p>
+<div class="eigen-tabelle-wrap">
+<table class="eigen-tabelle">
+  <tr><th></th><th>\\(n\\) gerade, positiv<br>(z.&nbsp;B. \\(x^2, x^4\\))</th><th>\\(n\\) ungerade, positiv<br>(z.&nbsp;B. \\(x^3, x^5\\))</th><th>\\(n\\) gerade, negativ<br>(z.&nbsp;B. \\(x^{-2}\\))</th><th>\\(n\\) ungerade, negativ<br>(z.&nbsp;B. \\(x^{-1}\\))</th></tr>
+  <tr><td><strong>Symmetrie</strong></td><td>achsensymm. (y-Achse)</td><td>punktsymm. (Ursprung)</td><td>achsensymm. (y-Achse)</td><td>punktsymm. (Ursprung)</td></tr>
+  <tr><td><strong>D</strong></td><td>\\(\\mathbb{R}\\)</td><td>\\(\\mathbb{R}\\)</td><td>\\(\\mathbb{R}\\setminus\\{0\\}\\)</td><td>\\(\\mathbb{R}\\setminus\\{0\\}\\)</td></tr>
+  <tr><td><strong>W</strong></td><td>\\([0;\\infty[\\)</td><td>\\(\\mathbb{R}\\)</td><td>\\(]0;\\infty[\\)</td><td>\\(\\mathbb{R}\\setminus\\{0\\}\\)</td></tr>
+  <tr><td><strong>\\(x \\to +\\infty\\)</strong></td><td>\\(f(x) \\to +\\infty\\)</td><td>\\(f(x) \\to +\\infty\\)</td><td>\\(f(x) \\to 0\\)</td><td>\\(f(x) \\to 0\\)</td></tr>
+  <tr><td><strong>\\(x \\to -\\infty\\)</strong></td><td>\\(f(x) \\to +\\infty\\)</td><td>\\(f(x) \\to -\\infty\\)</td><td>\\(f(x) \\to 0\\)</td><td>\\(f(x) \\to 0\\)</td></tr>
+</table>
+</div>
+<p><strong>Merke:</strong> Gerader Exponent → U-Form und Achsensymmetrie. Ungerader Exponent → S-Form und Punktsymmetrie.</p>
+<svg viewBox="0 0 320 230" role="img" aria-label="Graphen von x hoch 2 und x hoch 3 im Koordinatensystem" style="max-width:100%;height:auto;display:block;margin:0.5em auto;">
+  <!-- Gitter -->
+  <g stroke="#d0d7e2" stroke-width="1">
+    <line x1="40" y1="10" x2="40" y2="220"/><line x1="80" y1="10" x2="80" y2="220"/>
+    <line x1="160" y1="10" x2="160" y2="220"/><line x1="200" y1="10" x2="200" y2="220"/>
+    <line x1="240" y1="10" x2="240" y2="220"/><line x1="280" y1="10" x2="280" y2="220"/>
+    <line x1="10" y1="35" x2="310" y2="35"/><line x1="10" y1="75" x2="310" y2="75"/>
+    <line x1="10" y1="155" x2="310" y2="155"/><line x1="10" y1="195" x2="310" y2="195"/>
+  </g>
+  <!-- Achsen -->
+  <g stroke="#333" stroke-width="1.5">
+    <line x1="10" y1="115" x2="310" y2="115"/>
+    <line x1="120" y1="220" x2="120" y2="12"/>
+  </g>
+  <polygon points="310,115 300,111 300,119" fill="#333"/>
+  <polygon points="120,12 116,22 124,22" fill="#333"/>
+  <text x="300" y="132" font-size="12" fill="#333">x</text>
+  <text x="104" y="20" font-size="12" fill="#333">y</text>
+  <text x="110" y="131" font-size="11" fill="#333">0</text>
+  <text x="156" y="131" font-size="11" fill="#333">1</text>
+  <text x="104" y="79" font-size="11" fill="#333">1</text>
+  <!-- x^2: Skala 40px = 1 Einheit, Ursprung (120|115); exakte Parabel als quadratische Bezier -->
+  <path d="M 56,12.6 Q 120,217.4 184,12.6" fill="none" stroke="var(--fit-primary)" stroke-width="2.5"/>
+  <text x="196" y="30" font-size="12" fill="var(--fit-primary)">f(x) = x²</text>
+  <!-- x^3: exakte kubische Bezier von x=-1.28 bis 1.28 -->
+  <path d="M 68.8,198.9 C 102.9,31.1 137.1,198.9 171.2,31.1" fill="none" stroke="var(--fit-secondary)" stroke-width="2.5"/>
+  <text x="180" y="60" font-size="12" fill="var(--fit-secondary)">g(x) = x³</text>
+</svg>
+<p>Beide Graphen laufen durch \\((0\\,|\\,0)\\) und \\((1\\,|\\,1)\\) — aber links der y-Achse trennen sie sich: \\(x^2\\) geht nach oben, \\(x^3\\) nach unten.</p>` },
+  { titel: 'Negative Exponenten — Hyperbeln',
+    html: `
+<p>Ein negativer Exponent bedeutet <strong>Kehrwert</strong>:</p>
+<p>$$x^{-1} = \\frac{1}{x} \\qquad x^{-2} = \\frac{1}{x^2}$$</p>
+<p>Weil man durch \\(x\\) teilt, ist \\(x = 0\\) <strong>verboten</strong> — dort hat die Funktion eine <strong>Definitionslücke</strong>. Der Graph besteht aus zwei getrennten Ästen (<strong>Hyperbel</strong>).</p>
+<ul>
+  <li><strong>Nahe bei 0:</strong> Teilst du 1 durch eine winzige Zahl, wird das Ergebnis riesig. Der Graph schmiegt sich an die <strong>y-Achse</strong> an und schießt nach oben bzw. unten — die y-Achse ist eine <strong>senkrechte Asymptote</strong>.</li>
+  <li><strong>Für \\(x \\to \\pm\\infty\\):</strong> Teilst du 1 durch eine riesige Zahl, kommt fast 0 heraus. Der Graph schmiegt sich an die <strong>x-Achse</strong> an — sie ist eine <strong>waagerechte Asymptote</strong>. Erreicht wird sie nie!</li>
+</ul>
+<p><strong>Unterschied der beiden:</strong> \\(x^{-1}\\) ist punktsymmetrisch, die Äste liegen im I. und III. Quadranten. \\(x^{-2}\\) ist achsensymmetrisch, beide Äste liegen <em>oberhalb</em> der x-Achse (denn \\(\\frac{1}{x^2} > 0\\) für alle \\(x \\neq 0\\)).</p>
+<p><strong>Beispiel:</strong> Für \\(f(x) = x^{-1}\\) gilt \\(f(0{,}1) = 10\\), \\(f(0{,}01) = 100\\), aber \\(f(100) = 0{,}01\\).</p>` },
+  { titel: 'Wurzelfunktionen',
+    html: `
+<p>Die <strong>Wurzelfunktion</strong> \\(f(x) = \\sqrt{x}\\) ist die <strong>Umkehrung des Quadrierens</strong> — aber nur im I. Quadranten: Aus \\(3^2 = 9\\) wird \\(\\sqrt{9} = 3\\).</p>
+<ul>
+  <li><strong>Definitionsbereich:</strong> \\(D = [0;\\infty[\\) — unter der Wurzel darf nichts Negatives stehen.</li>
+  <li><strong>Wertebereich:</strong> \\(W = [0;\\infty[\\) — die Wurzel liefert nie negative Werte.</li>
+  <li><strong>Keine Symmetrie:</strong> Der Graph ist eine Halbgerade-artige Kurve, die im Ursprung startet, steil beginnt und immer flacher wird.</li>
+</ul>
+<p><strong>Wertepaare zum Skizzieren:</strong></p>
+<p>\\(\\sqrt{0} = 0\\), \\(\\;\\sqrt{1} = 1\\), \\(\\;\\sqrt{4} = 2\\), \\(\\;\\sqrt{9} = 3\\), \\(\\;\\sqrt{16} = 4\\)</p>
+<p>Zwischen 0 und 1 liegt die Kurve <em>über</em> der Geraden \\(y = x\\) (z.&nbsp;B. \\(\\sqrt{0{,}25} = 0{,}5\\)), danach darunter — sie wächst immer weiter, aber immer langsamer.</p>` },
+  { titel: 'Verschieben, Strecken, Spiegeln',
+    html: `
+<p>Aus der Grundfunktion \\(x^n\\) entstehen durch drei Parameter neue Funktionen:</p>
+<p>$$f(x) = a \\cdot (x + d)^n + e$$</p>
+<ul>
+  <li>\\(a\\): <strong>streckt</strong> den Graphen in y-Richtung (\\(|a| > 1\\)) oder <strong>staucht</strong> ihn (\\(|a| < 1\\)). Bei negativem \\(a\\) wird zusätzlich an der <strong>x-Achse gespiegelt</strong>.<br><em>Mini-Beispiel:</em> \\(f(x) = -2x^2\\) ist eine nach unten geöffnete, gestreckte Parabel.</li>
+  <li>\\(d\\): <strong>verschiebt nach links</strong> (bei \\(+d\\)) bzw. nach rechts (bei \\(-d\\)). Achtung, das fühlt sich „verkehrt herum" an!<br><em>Mini-Beispiel:</em> \\(f(x) = (x + 4)^3\\) ist \\(x^3\\), um 4 nach <strong>links</strong> verschoben; \\(f(x) = (x - 4)^3\\) entsprechend um 4 nach rechts.</li>
+  <li>\\(e\\): <strong>verschiebt nach oben</strong> (\\(e > 0\\)) bzw. unten (\\(e < 0\\)).<br><em>Mini-Beispiel:</em> \\(f(x) = x^4 - 3\\) ist \\(x^4\\), um 3 nach unten verschoben.</li>
+</ul>
+<p><strong>Alles zusammen:</strong> \\(f(x) = 3(x - 2)^3 + 5\\) ist \\(x^3\\), um Faktor 3 gestreckt, um 2 nach rechts und um 5 nach oben verschoben.</p>
+<p><strong>Hinweis:</strong> Das funktioniert genauso bei Wurzelfunktionen: \\(f(x) = \\sqrt{x + 1} - 2\\) startet im Punkt \\((-1\\,|\\,-2)\\) statt im Ursprung.</p>` }
+];
+
+// ── Workout ─────────────────────────────────────────────────
+const AUFGABEN = [
+  // Stufe 1
+  { id: 1, stufe: 1, typ: 'multi',
+    frage: 'Welche Aussagen über Potenzfunktionen \\(f(x) = x^n\\) mit natürlichem Exponenten \\(n\\) stimmen? (Mehrere Antworten möglich.)',
+    optionen: [
+      'Bei geradem \\(n\\) ist der Graph achsensymmetrisch zur y-Achse.',
+      'Bei ungeradem \\(n\\) ist der Graph punktsymmetrisch zum Ursprung.',
+      '\\(f(x) = x^4\\) nimmt niemals negative Werte an.',
+      'Bei ungeradem \\(n\\) sind alle Funktionswerte positiv.',
+      'Bei geradem \\(n\\) verläuft der Graph durch den I. und III. Quadranten.'
+    ],
+    korrekt: [0, 1, 2],
+    tipp: 'Denk an die Graphen von \\(x^2\\) (U-Form) und \\(x^3\\) (S-Form): Wo liegen sie, welche Symmetrie haben sie?',
+    loesungsweg: 'Gerades \\(n\\): U-Form, achsensymmetrisch, Werte nie negativ — also stimmen die Aussagen 1 und 3, und der Graph verläuft durch den I. und <em>II.</em> Quadranten (nicht III.). Ungerades \\(n\\): punktsymmetrisch (Aussage 2 stimmt), aber für negative \\(x\\) sind die Werte negativ — Aussage 4 ist falsch.' },
+  { id: 2, stufe: 1, typ: 'zuordnung',
+    frage: 'Ordne jeder Funktionsgleichung die passende Graph-Beschreibung zu.',
+    paare: [
+      { links: '\\(y = x^3 + 1\\)', rechts: 'S-Form, um 1 nach oben verschoben' },
+      { links: '\\(y = -x^2\\)', rechts: 'nach unten geöffnete Parabel' },
+      { links: '\\(y = x^{-1}\\)', rechts: 'Hyperbel im I. und III. Quadranten' },
+      { links: '\\(y = \\sqrt{x}\\)', rechts: 'startet im Ursprung, nur für \\(x \\geq 0\\) definiert' }
+    ],
+    tipp: 'Bestimme zuerst den Grundtyp (Exponent gerade/ungerade/negativ oder Wurzel), dann schau auf Vorzeichen und Verschiebung.',
+    loesungsweg: '\\(x^3 + 1\\): ungerader Exponent gibt die S-Form, \\(+1\\) schiebt sie nach oben. \\(-x^2\\): das Minus spiegelt die Parabel an der x-Achse — sie öffnet nach unten. \\(x^{-1} = \\frac{1}{x}\\): Hyperbel, punktsymmetrisch, Äste im I. und III. Quadranten. \\(\\sqrt{x}\\): nur für \\(x \\geq 0\\) definiert, beginnt in \\((0\\,|\\,0)\\).' },
+  { id: 3, stufe: 1, typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = 2x^3\\). Berechne \\(f(3)\\).',
+    loesung: 54,
+    tipp: 'Erst potenzieren, dann mit 2 multiplizieren — Potenz vor Punktrechnung.',
+    loesungsweg: '\\(f(3) = 2 \\cdot 3^3 = 2 \\cdot 27 = 54\\). Achtung: \\(2 \\cdot 3^3\\) ist nicht \\((2 \\cdot 3)^3 = 216\\)!' },
+  { id: 4, stufe: 1, typ: 'numerisch',
+    frage: 'Löse die Gleichung \\(x^3 = -27\\).',
+    loesung: -3,
+    tipp: 'Ungerader Exponent: Es gibt genau eine Lösung, auch für negative rechte Seiten. Welche Zahl ergibt hoch 3 gerade \\(-27\\)?',
+    loesungsweg: 'Gesucht ist die Zahl, deren dritte Potenz \\(-27\\) ergibt: \\((-3)^3 = (-3) \\cdot (-3) \\cdot (-3) = -27\\). Also \\(x = -3\\). Bei ungeradem Exponenten gibt es genau eine Lösung.' },
+  { id: 5, stufe: 1, typ: 'mc',
+    frage: 'Was ist der Definitionsbereich von \\(f(x) = \\dfrac{1}{x - 2}\\)?',
+    optionen: [
+      '\\(D = \\mathbb{R}\\setminus\\{2\\}\\)',
+      '\\(D = \\mathbb{R}\\setminus\\{0\\}\\)',
+      '\\(D = \\mathbb{R}\\setminus\\{-2\\}\\)',
+      '\\(D = [2;\\infty[\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Durch 0 darf man nicht teilen: Für welches \\(x\\) wird der Nenner Null?',
+    loesungsweg: 'Der Nenner darf nicht Null werden: \\(x - 2 = 0 \\;\\Rightarrow\\; x = 2\\). Diese eine Zahl muss ausgeschlossen werden: \\(D = \\mathbb{R}\\setminus\\{2\\}\\).' },
+  { id: 6, stufe: 1, typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = \\sqrt{x} + 1\\). Berechne \\(f(9)\\).',
+    loesung: 4,
+    tipp: 'Erst die Wurzel aus 9 ziehen, dann 1 addieren.',
+    loesungsweg: '\\(f(9) = \\sqrt{9} + 1 = 3 + 1 = 4\\).' },
+  // Stufe 2
+  { id: 7, stufe: 2, typ: 'numerisch',
+    frage: 'Löse die Gleichung \\(2x^4 - 30 = 132\\). Gib die positive Lösung an.',
+    loesung: 3,
+    tipp: 'Bring die Gleichung erst auf die Form \\(x^4 = \\ldots\\), dann ziehe die vierte Wurzel. Gerader Exponent: Es gibt zwei Lösungen!',
+    loesungsweg: '\\(2x^4 - 30 = 132 \\;\\Rightarrow\\; 2x^4 = 162 \\;\\Rightarrow\\; x^4 = 81\\). Wegen \\(3^4 = 81\\) gilt \\(x = \\pm 3\\) (gerader Exponent: zwei Lösungen). Die positive Lösung ist \\(x = 3\\).' },
+  { id: 8, stufe: 2, typ: 'mc',
+    frage: 'Der Graph von \\(y = x^3\\) wird mit Faktor 2 in y-Richtung gestreckt, um 3 nach rechts und um 1 nach oben verschoben. Wie lautet die neue Gleichung?',
+    optionen: [
+      '\\(y = 2(x - 3)^3 + 1\\)',
+      '\\(y = 2(x + 3)^3 + 1\\)',
+      '\\(y = 2(x - 3)^3 - 1\\)',
+      '\\(y = (2x - 3)^3 + 1\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Verschiebung nach rechts heißt Minus in der Klammer. Der Streckfaktor steht als Faktor vor der Klammer, nicht innen beim \\(x\\).',
+    loesungsweg: 'Streckfaktor 2 als Faktor davor: \\(2(\\ldots)^3\\). Verschiebung um 3 nach <em>rechts</em>: \\((x - 3)\\) — Minus, nicht Plus! Verschiebung um 1 nach oben: \\(+1\\) am Ende. Ergebnis: \\(y = 2(x - 3)^3 + 1\\).' },
+  { id: 9, stufe: 2, typ: 'numerisch',
+    frage: 'Löse die Gleichung \\(x^{-2} = \\dfrac{1}{25}\\). Gib die positive Lösung an.',
+    loesung: 5,
+    tipp: 'Schreibe \\(x^{-2}\\) als Bruch \\(\\frac{1}{x^2}\\) und vergleiche die Nenner.',
+    loesungsweg: '\\(x^{-2} = \\frac{1}{x^2} = \\frac{1}{25} \\;\\Rightarrow\\; x^2 = 25 \\;\\Rightarrow\\; x = \\pm 5\\). Die positive Lösung ist \\(x = 5\\).' },
+  { id: 10, stufe: 2, typ: 'numerisch',
+    frage: 'Der Punkt \\(P(a\\,|\\,4)\\) liegt auf dem Graphen von \\(f(x) = \\sqrt{x - 5}\\). Berechne \\(a\\).',
+    loesung: 21,
+    tipp: 'Setze \\(f(a) = 4\\) an und quadriere beide Seiten, um die Wurzel loszuwerden.',
+    loesungsweg: '\\(\\sqrt{a - 5} = 4\\). Quadrieren: \\(a - 5 = 16 \\;\\Rightarrow\\; a = 21\\). Probe: \\(\\sqrt{21 - 5} = \\sqrt{16} = 4\\). Passt.' },
+  { id: 11, stufe: 2, typ: 'mc',
+    frage: 'Der Graph von \\(y = \\sqrt{x}\\) wird an der x-Achse gespiegelt und um 2 nach links verschoben. Wie lautet die neue Gleichung?',
+    optionen: [
+      '\\(y = -\\sqrt{x + 2}\\)',
+      '\\(y = -\\sqrt{x - 2}\\)',
+      '\\(y = \\sqrt{-x + 2}\\)',
+      '\\(y = -\\sqrt{x} + 2\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Spiegeln an der x-Achse gibt ein Minus vor der Wurzel. Nach links verschieben heißt Plus in der Wurzel.',
+    loesungsweg: 'Spiegelung an der x-Achse: Minus vor die ganze Funktion, also \\(-\\sqrt{\\ldots}\\). Verschiebung um 2 nach <em>links</em>: \\(x + 2\\) unter der Wurzel. Ergebnis: \\(y = -\\sqrt{x + 2}\\). Der neue Startpunkt ist \\((-2\\,|\\,0)\\), der Graph läuft nach unten.' }
+];
+</script>
+<script src="../fit-engine.js"></script>
+</body>
+</html>
