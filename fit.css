@@ -385,6 +385,35 @@ header p {
     transition: border-color 0.2s, background 0.2s;
 }
 
+/* KaTeX-Spans in Zuordnungs-Buttons duerfen Klicks auf
+   Nachbar-Buttons nicht abfangen (ueberstehende Struts) */
+.fit-zuordnung button * {
+    pointer-events: none;
+}
+
+/* Eigenschaften-Tabellen (Technik-Training): klein und mobil scrollbar.
+   position:relative, damit absolut positionierte KaTeX-MathML-Teile
+   innerhalb des scrollbaren Wrappers geclippt werden.
+   Kopfzeilen-Hintergrund bleibt themenspezifisch (Seiten-<style>). */
+.eigen-tabelle-wrap {
+    overflow-x: auto;
+    max-width: 100%;
+    position: relative;
+}
+
+.eigen-tabelle {
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 0.5em 0;
+}
+
+.eigen-tabelle th,
+.eigen-tabelle td {
+    border: 1px solid #d0d7e2;
+    padding: 4px 8px;
+    text-align: center;
+}
+
 .fit-zuordnung button:hover {
     border-color: var(--fit-primary);
 }
@@ -646,6 +675,56 @@ header p {
 
 .fit-abschluss .fit-ergebnis-block.falsch .wert {
     color: var(--fit-wrong);
+}
+
+/* Fehlertyp-Reflexion (Selbsteinschätzung im Abschluss-Screen) */
+.fit-reflexion {
+    margin: 8px 0 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+}
+
+.fit-reflexion-frage {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.fit-reflexion-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+.fit-reflexion-chips button {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 999px;
+    cursor: pointer;
+    color: #1f2937;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.fit-reflexion-chips button:hover {
+    border-color: var(--fit-primary);
+}
+
+.fit-reflexion-chips button.selected {
+    border-color: var(--fit-primary);
+    background: var(--fit-primary);
+    color: white;
+}
+
+.fit-reflexion-tipp {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #374151;
+    min-height: 1.2em;
 }
 
 .fit-abschluss .fit-abschluss-buttons {
