@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lineare Funktionen — FunctionGym</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="../fit.css">
+<style>
+  :root { --fit-primary: #1d4ed8; --fit-secondary: #0e7490; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const THEMA_KEY = 'fitgym-linear';
+const THEMA_CONFIG = { name: 'Lineare Funktionen' };
+
+// ── Eingangscheck ───────────────────────────────────────────
+const DIAGNOSE = [
+  { typ: 'mc',
+    frage: 'Gegeben ist \\(f(x) = 3x - 2\\). Welche Aussage stimmt?',
+    optionen: [
+      'Steigung \\(m = 3\\), y-Achsenabschnitt \\(b = -2\\)',
+      'Steigung \\(m = -2\\), y-Achsenabschnitt \\(b = 3\\)',
+      'Steigung \\(m = 3\\), y-Achsenabschnitt \\(b = 2\\)'
+    ],
+    korrekt: 0,
+    loesungsweg: 'In \\(f(x) = mx + b\\) steht \\(m\\) vor dem \\(x\\) und \\(b\\) ist die Zahl dahinter — inklusive Vorzeichen. Also \\(m = 3\\) und \\(b = -2\\).' },
+  { typ: 'numerisch',
+    frage: 'Berechne die Nullstelle von \\(f(x) = 2x - 8\\).',
+    loesung: 4,
+    loesungsweg: '\\(2x - 8 = 0 \\;\\Rightarrow\\; 2x = 8 \\;\\Rightarrow\\; x = 4\\).' },
+  { typ: 'mc',
+    frage: 'Liegt der Punkt \\(P(2\\,|\\,5)\\) auf der Geraden \\(g\\!: y = 3x - 1\\)?',
+    optionen: [
+      'Ja, denn \\(3 \\cdot 2 - 1 = 5\\)',
+      'Nein, denn \\(3 \\cdot 2 - 1 = 7\\)',
+      'Ja, denn \\(3 \\cdot 5 - 1 = 14\\)'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Punktprobe: \\(x = 2\\) einsetzen (nicht den y-Wert!): \\(3 \\cdot 2 - 1 = 5\\). Das ist genau der y-Wert von \\(P\\), also liegt \\(P\\) auf \\(g\\).' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = -2x + 7\\). Berechne \\(f(3)\\).',
+    loesung: 1,
+    loesungsweg: '\\(f(3) = -2 \\cdot 3 + 7 = -6 + 7 = 1\\).' }
+];
+
+// ── Technik (Theorie) ───────────────────────────────────────
+const THEORIE = [
+  { titel: 'Was ist eine lineare Funktion?',
+    html: `
+<p>Eine <strong>lineare Funktion</strong> hat die Form</p>
+<p>$$f(x) = mx + b $$</p>
+<p>Ihr Graph ist immer eine <strong>Gerade</strong>. Dabei gilt:</p>
+<ul>
+  <li>\\(m\\) ist die <strong>Steigung</strong>: Gehst du 1 nach rechts, geht die Gerade um \\(m\\) nach oben (bei negativem \\(m\\) nach unten).</li>
+  <li>\\(b\\) ist der <strong>y-Achsenabschnitt</strong>: Die Gerade schneidet die y-Achse im Punkt \\((0\\,|\\,b)\\).</li>
+</ul>
+<svg viewBox="0 0 320 230" role="img" aria-label="Gerade mit Steigungsdreieck im Koordinatensystem" style="max-width:100%;height:auto;display:block;margin:0.5em auto;">
+  <!-- Gitter -->
+  <g stroke="#d0d7e2" stroke-width="1">
+    <line x1="80" y1="10" x2="80" y2="210"/><line x1="120" y1="10" x2="120" y2="210"/>
+    <line x1="160" y1="10" x2="160" y2="210"/><line x1="200" y1="10" x2="200" y2="210"/>
+    <line x1="240" y1="10" x2="240" y2="210"/><line x1="280" y1="10" x2="280" y2="210"/>
+    <line x1="10" y1="140" x2="310" y2="140"/><line x1="10" y1="100" x2="310" y2="100"/>
+    <line x1="10" y1="60" x2="310" y2="60"/><line x1="10" y1="20" x2="310" y2="20"/>
+  </g>
+  <!-- Achsen -->
+  <g stroke="#333" stroke-width="1.5">
+    <line x1="10" y1="180" x2="310" y2="180"/>
+    <line x1="40" y1="215" x2="40" y2="12"/>
+  </g>
+  <polygon points="310,180 300,176 300,184" fill="#333"/>
+  <polygon points="40,12 36,22 44,22" fill="#333"/>
+  <text x="300" y="198" font-size="12" fill="#333">x</text>
+  <text x="24" y="20" font-size="12" fill="#333">y</text>
+  <text x="34" y="196" font-size="11" fill="#333">0</text>
+  <text x="76" y="196" font-size="11" fill="#333">1</text>
+  <text x="24" y="144" font-size="11" fill="#333">1</text>
+  <!-- Steigungsdreieck: von (1|1,5) 2 nach rechts, 1 nach oben -->
+  <g>
+    <polygon points="80,120 160,120 160,80" fill="var(--fit-secondary)" fill-opacity="0.15" stroke="var(--fit-secondary)" stroke-width="1.5"/>
+    <text x="108" y="136" font-size="12" fill="var(--fit-secondary)">Δx = 2</text>
+    <text x="166" y="104" font-size="12" fill="var(--fit-secondary)">Δy = 1</text>
+  </g>
+  <!-- Gerade f(x) = 0,5x + 1 -->
+  <line x1="0" y1="160" x2="310" y2="5" stroke="var(--fit-primary)" stroke-width="2.5"/>
+  <circle cx="40" cy="140" r="4" fill="var(--fit-primary)"/>
+  <text x="48" y="158" font-size="12" fill="var(--fit-primary)">b = 1</text>
+  <text x="212" y="46" font-size="12" fill="var(--fit-primary)">f(x) = 0,5x + 1</text>
+</svg>
+<p>Im Bild: \\(f(x) = 0{,}5x + 1\\). Das <strong>Steigungsdreieck</strong> zeigt: 2 nach rechts, 1 nach oben, also \\(m = \\frac{\\Delta y}{\\Delta x} = \\frac{1}{2} = 0{,}5\\).</p>` },
+  { titel: 'Steigung aus zwei Punkten',
+    html: `
+<p>Kennst du zwei Punkte \\(A(x_1\\,|\\,y_1)\\) und \\(B(x_2\\,|\\,y_2)\\) einer Geraden, berechnest du die Steigung mit dem <strong>Differenzenquotienten</strong>:</p>
+<p>$$m = \\frac{y_2 - y_1}{x_2 - x_1} $$</p>
+<p><strong>Beispiel:</strong> \\(A(1\\,|\\,2)\\) und \\(B(4\\,|\\,8)\\):</p>
+<p>$$m = \\frac{8 - 2}{4 - 1} = \\frac{6}{3} = 2 $$</p>
+<p>Achte auf die Reihenfolge: oben und unten muss <em>derselbe</em> Punkt zuerst stehen. Vertauschst du beide gleichzeitig, kommt dasselbe \\(m\\) heraus — vertauschst du nur eins, stimmt das Vorzeichen nicht mehr.</p>` },
+  { titel: 'Funktionsgleichung aufstellen',
+    html: `
+<p>So findest du die Gleichung einer Geraden durch zwei Punkte:</p>
+<ol>
+  <li><strong>Steigung berechnen:</strong> \\(m = \\dfrac{y_2 - y_1}{x_2 - x_1}\\)</li>
+  <li><strong>\\(b\\) bestimmen:</strong> Einen der beiden Punkte in \\(y = mx + b\\) einsetzen und nach \\(b\\) auflösen.</li>
+</ol>
+<p><strong>Beispiel:</strong> Gerade durch \\(A(2\\,|\\,7)\\) und \\(B(5\\,|\\,16)\\):</p>
+<p>Schritt 1: \\(m = \\dfrac{16 - 7}{5 - 2} = \\dfrac{9}{3} = 3\\)</p>
+<p>Schritt 2: \\(A\\) einsetzen: \\(7 = 3 \\cdot 2 + b \\;\\Rightarrow\\; 7 = 6 + b \\;\\Rightarrow\\; b = 1\\)</p>
+<p>Ergebnis: \\(f(x) = 3x + 1\\). Kontrolle mit \\(B\\): \\(3 \\cdot 5 + 1 = 16\\). Passt.</p>` },
+  { titel: 'Nullstellen',
+    html: `
+<p>Die <strong>Nullstelle</strong> ist die Stelle, an der der Graph die x-Achse schneidet. Dort gilt \\(f(x) = 0\\). Also: Funktionsterm gleich Null setzen und nach \\(x\\) auflösen.</p>
+<p><strong>Beispiel:</strong> \\(f(x) = 5x - 15\\):</p>
+<p>$$5x - 15 = 0 \\;\\Rightarrow\\; 5x = 15 \\;\\Rightarrow\\; x = 3 $$</p>
+<p><strong>Merke:</strong> Die Nullstelle bekommst du durch Rechnen — den Schnittpunkt mit der <em>y-Achse</em> kannst du dagegen direkt ablesen: Er ist immer \\((0\\,|\\,b)\\).</p>` }
+];
+
+// ── Workout ─────────────────────────────────────────────────
+const AUFGABEN = [
+  // Stufe 1
+  { id: 1, stufe: 1, typ: 'mc',
+    frage: 'Gegeben ist \\(f(x) = -0{,}5x + 4\\). Lies Steigung und y-Achsenabschnitt ab.',
+    optionen: [
+      '\\(m = -0{,}5\\); \\(b = 4\\)',
+      '\\(m = 4\\); \\(b = -0{,}5\\)',
+      '\\(m = 0{,}5\\); \\(b = 4\\)',
+      '\\(m = -0{,}5\\); \\(b = -4\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Vergleiche mit der allgemeinen Form \\(f(x) = mx + b\\): Was steht vor dem \\(x\\), was steht allein?',
+    loesungsweg: 'Die Zahl vor dem \\(x\\) ist die Steigung: \\(m = -0{,}5\\) (Vorzeichen gehört dazu!). Die Zahl ohne \\(x\\) ist der y-Achsenabschnitt: \\(b = 4\\).' },
+  { id: 2, stufe: 1, typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = 4x - 5\\). Berechne \\(f(-2)\\).',
+    loesung: -13,
+    tipp: 'Setze \\(x = -2\\) in den Funktionsterm ein. Achte beim Multiplizieren auf das Vorzeichen.',
+    loesungsweg: '\\(f(-2) = 4 \\cdot (-2) - 5 = -8 - 5 = -13\\).' },
+  { id: 3, stufe: 1, typ: 'numerisch',
+    frage: 'Berechne die Nullstelle von \\(f(x) = 3x + 9\\).',
+    loesung: -3,
+    tipp: 'Setze \\(f(x) = 0\\) und löse die Gleichung nach \\(x\\) auf.',
+    loesungsweg: '\\(3x + 9 = 0 \\;\\Rightarrow\\; 3x = -9 \\;\\Rightarrow\\; x = -3\\).' },
+  { id: 4, stufe: 1, typ: 'mc',
+    frage: 'Eine Gerade verläuft durch \\(A(1\\,|\\,3)\\) und \\(B(3\\,|\\,7)\\). Wie lautet ihre Gleichung?',
+    optionen: [
+      '\\(y = 2x + 1\\)',
+      '\\(y = 2x + 3\\)',
+      '\\(y = x + 2\\)',
+      '\\(y = -2x + 5\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Erst \\(m\\) mit dem Differenzenquotienten berechnen, dann einen Punkt einsetzen, um \\(b\\) zu finden.',
+    loesungsweg: '\\(m = \\frac{7 - 3}{3 - 1} = \\frac{4}{2} = 2\\). Dann \\(A\\) einsetzen: \\(3 = 2 \\cdot 1 + b \\Rightarrow b = 1\\). Also \\(y = 2x + 1\\). Kontrolle mit \\(B\\): \\(2 \\cdot 3 + 1 = 7\\). Passt.' },
+  { id: 5, stufe: 1, typ: 'mc',
+    frage: 'Liegt der Punkt \\(Q(-1\\,|\\,2)\\) auf der Geraden \\(h\\!: y = -3x - 1\\)?',
+    optionen: [
+      'Ja, denn \\(-3 \\cdot (-1) - 1 = 2\\)',
+      'Nein, denn \\(-3 \\cdot (-1) - 1 = -4\\)',
+      'Ja, denn \\(-3 \\cdot 2 - 1 = -7\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Punktprobe: Setze die x-Koordinate von \\(Q\\) ein und vergleiche das Ergebnis mit der y-Koordinate. Minus mal Minus gibt Plus.',
+    loesungsweg: 'x-Koordinate einsetzen: \\(-3 \\cdot (-1) - 1 = 3 - 1 = 2\\). Das stimmt mit der y-Koordinate von \\(Q\\) überein, also liegt \\(Q\\) auf \\(h\\).' },
+  { id: 6, stufe: 1, typ: 'zuordnung',
+    frage: 'Ordne jeder Geradengleichung die passende Eigenschaft zu.',
+    paare: [
+      { links: '\\(y = 2x + 3\\)', rechts: 'steigend, schneidet die y-Achse oberhalb des Ursprungs' },
+      { links: '\\(y = -0{,}5x - 2\\)', rechts: 'fallend, schneidet die y-Achse unterhalb des Ursprungs' },
+      { links: '\\(y = 4\\)', rechts: 'parallel zur x-Achse' },
+      { links: '\\(y = 3x\\)', rechts: 'geht durch den Ursprung' }
+    ],
+    tipp: 'Schau auf \\(m\\) (positiv = steigend, negativ = fallend, null = waagerecht) und auf \\(b\\) (dort schneidet die Gerade die y-Achse).',
+    loesungsweg: '\\(y = 2x + 3\\): \\(m = 2 > 0\\) steigend, \\(b = 3 > 0\\) oben. \\(y = -0{,}5x - 2\\): \\(m < 0\\) fallend, \\(b = -2\\) unten. \\(y = 4\\): \\(m = 0\\), waagerechte Gerade. \\(y = 3x\\): \\(b = 0\\), also durch \\((0\\,|\\,0)\\).' },
+  // Stufe 2
+  { id: 7, stufe: 2, typ: 'numerisch',
+    frage: 'Eine Gerade verläuft durch \\(A(-2\\,|\\,1)\\) und \\(B(4\\,|\\,5)\\). Berechne die Steigung \\(m\\). (Bruch wie 2/3 oder gerundeter Dezimalwert möglich.)',
+    loesung: 0.6666666666666666,
+    toleranz: 0.01,
+    tipp: 'Differenzenquotient: \\(m = \\frac{y_2 - y_1}{x_2 - x_1}\\). Vorsicht beim Minus: \\(4 - (-2) = 6\\).',
+    loesungsweg: '\\(m = \\frac{5 - 1}{4 - (-2)} = \\frac{4}{6} = \\frac{2}{3} \\approx 0{,}67\\).' },
+  { id: 8, stufe: 2, typ: 'numerisch',
+    frage: 'Berechne die Nullstelle von \\(f(x) = 3x + 7\\). (Bruch wie -7/3 oder gerundeter Dezimalwert möglich.)',
+    loesung: -2.3333333333333335,
+    toleranz: 0.01,
+    tipp: 'Setze \\(f(x) = 0\\). Das Ergebnis ist kein ganzzahliger Wert — lass es als Bruch stehen.',
+    loesungsweg: '\\(3x + 7 = 0 \\;\\Rightarrow\\; 3x = -7 \\;\\Rightarrow\\; x = -\\frac{7}{3} \\approx -2{,}33\\).' },
+  { id: 9, stufe: 2, typ: 'numerisch',
+    frage: 'Die Geraden \\(g\\!: y = 2x - 1\\) und \\(h\\!: y = -x + 5\\) schneiden sich. Berechne die x-Koordinate des Schnittpunkts.',
+    loesung: 2,
+    tipp: 'Im Schnittpunkt sind beide y-Werte gleich: Setze die Funktionsterme gleich und löse nach \\(x\\) auf.',
+    loesungsweg: 'Gleichsetzen: \\(2x - 1 = -x + 5\\). \\(+x\\) auf beiden Seiten: \\(3x - 1 = 5\\). \\(+1\\): \\(3x = 6\\), also \\(x = 2\\). (Zur Kontrolle: \\(y = 2 \\cdot 2 - 1 = 3\\) und \\(-2 + 5 = 3\\).)' },
+  { id: 10, stufe: 2, typ: 'mc',
+    frage: 'Ein Fahrradverleih verlangt 5 € Grundgebühr und zusätzlich 2,50 € pro Stunde. Welche Gleichung beschreibt die Kosten \\(K\\) (in €) für \\(x\\) Stunden?',
+    optionen: [
+      '\\(K(x) = 2{,}5x + 5\\)',
+      '\\(K(x) = 5x + 2{,}5\\)',
+      '\\(K(x) = 7{,}5x\\)',
+      '\\(K(x) = 2{,}5x - 5\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Die Grundgebühr fällt einmalig an (auch bei 0 Stunden) — sie ist das \\(b\\). Der Preis pro Stunde wächst mit \\(x\\) — er ist das \\(m\\).',
+    loesungsweg: 'Der Preis pro Stunde (2,50 €) ist die Steigung, die Grundgebühr (5 €) der y-Achsenabschnitt: \\(K(x) = 2{,}5x + 5\\). Probe: Für 0 Stunden zahlst du \\(K(0) = 5\\) € — genau die Grundgebühr.' }
+];
+</script>
+<script src="../fit-engine.js"></script>
+</body>
+</html>
