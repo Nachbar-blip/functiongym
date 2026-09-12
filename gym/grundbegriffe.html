@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grundbegriffe zu Funktionen — FunctionGym</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="../fit.css">
+<style>
+  :root { --fit-primary: #7c3aed; --fit-secondary: #a21caf; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const THEMA_KEY = 'fitgym-grundbegriffe';
+const THEMA_CONFIG = { name: 'Grundbegriffe zu Funktionen' };
+
+// ── Eingangscheck ───────────────────────────────────────────
+const DIAGNOSE = [
+  { typ: 'mc',
+    frage: 'Was bedeutet die Schreibweise \\(f(3) = 5\\)?',
+    optionen: [
+      'An der Stelle \\(x = 3\\) hat die Funktion den Funktionswert \\(5\\).',
+      'An der Stelle \\(x = 5\\) hat die Funktion den Funktionswert \\(3\\).',
+      'Die Funktion \\(f\\) ist das Produkt \\(3 \\cdot 5 = 15\\).'
+    ],
+    korrekt: 0,
+    loesungsweg: 'In der Klammer steht immer die <em>Stelle</em> (der x-Wert), das Ergebnis ist der <em>Funktionswert</em> (der y-Wert). \\(f(3) = 5\\) heißt also: Setzt du \\(x = 3\\) ein, kommt \\(5\\) heraus — der Punkt \\((3\\,|\\,5)\\) liegt auf dem Graphen.' },
+  { typ: 'mc',
+    frage: 'Welche der beiden Zuordnungen ist eine Funktion?',
+    optionen: [
+      '„Jedem Schüler einer Klasse wird seine Körpergröße zugeordnet."',
+      '„Jeder Körpergröße werden alle Schüler zugeordnet, die diese Größe haben."',
+      'Beide Zuordnungen sind Funktionen.'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Eine Funktion ordnet jedem Element <strong>genau ein</strong> Element zu. Jeder Schüler hat genau eine Körpergröße — das ist eindeutig, also eine Funktion. Umgekehrt können zu einer Körpergröße aber mehrere Schüler gehören — nicht eindeutig, also keine Funktion.' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = x^2 + 2\\). Berechne \\(f(4)\\).',
+    loesung: 18,
+    loesungsweg: '\\(f(4) = 4^2 + 2 = 16 + 2 = 18\\).' },
+  { typ: 'mc',
+    frage: 'Was ist der maximale Definitionsbereich von \\(f(x) = \\dfrac{1}{x}\\)?',
+    optionen: [
+      '\\(D = \\mathbb{R} \\setminus \\{0\\}\\)',
+      '\\(D = \\mathbb{R}\\)',
+      '\\(D = [0\\,;\\,\\infty[\\)'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Durch \\(0\\) darf man nicht teilen — für \\(x = 0\\) ist der Term nicht definiert. Alle anderen reellen Zahlen sind erlaubt: \\(D = \\mathbb{R} \\setminus \\{0\\}\\).' }
+];
+
+// ── Technik (Theorie) ───────────────────────────────────────
+const THEORIE = [
+  { titel: 'Was ist eine Funktion?',
+    html: `
+<p>Eine <strong>Funktion</strong> ist eine Zuordnung, die jedem \\(x\\)-Wert <strong>genau einen</strong> \\(y\\)-Wert zuordnet:</p>
+<p>$$x \\;\\longmapsto\\; f(x) $$</p>
+<ul>
+  <li>Der eingesetzte Wert \\(x\\) heißt <strong>Stelle</strong>.</li>
+  <li>Das Ergebnis \\(f(x)\\) heißt <strong>Funktionswert</strong>.</li>
+  <li>\\(f(2) = 7\\) bedeutet: An der Stelle \\(2\\) ist der Funktionswert \\(7\\) — der Punkt \\((2\\,|\\,7)\\) liegt auf dem Graphen.</li>
+</ul>
+<svg viewBox="0 0 340 170" role="img" aria-label="Links eine Parabel (Funktion), rechts ein liegender Bogen (keine Funktion), jeweils mit senkrechter Testlinie" style="max-width:100%;height:auto;display:block;margin:0.5em auto;">
+  <!-- Links: Parabel = Funktion -->
+  <g>
+    <line x1="15" y1="130" x2="155" y2="130" stroke="#333" stroke-width="1.5"/>
+    <line x1="85" y1="150" x2="85" y2="15" stroke="#333" stroke-width="1.5"/>
+    <path d="M 30 40 Q 85 190 140 40" fill="none" stroke="var(--fit-primary)" stroke-width="2.5"/>
+    <line x1="115" y1="15" x2="115" y2="150" stroke="var(--fit-secondary)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <circle cx="115" cy="93" r="4" fill="var(--fit-secondary)"/>
+    <text x="30" y="164" font-size="12" fill="#333">Funktion: 1 Schnittpunkt ✓</text>
+  </g>
+  <!-- Rechts: liegender Bogen (Halbkreis nach rechts offen gebogen) = keine Funktion -->
+  <g>
+    <line x1="190" y1="130" x2="330" y2="130" stroke="#333" stroke-width="1.5"/>
+    <line x1="205" y1="150" x2="205" y2="15" stroke="#333" stroke-width="1.5"/>
+    <path d="M 300 30 Q 210 75 300 120" fill="none" stroke="var(--fit-primary)" stroke-width="2.5"/>
+    <line x1="270" y1="15" x2="270" y2="150" stroke="var(--fit-secondary)" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <circle cx="270" cy="44" r="4" fill="var(--fit-secondary)"/>
+    <circle cx="270" cy="106" r="4" fill="var(--fit-secondary)"/>
+    <text x="196" y="164" font-size="12" fill="#333">keine Funktion: 2 Punkte ✗</text>
+  </g>
+</svg>
+<p>Links trifft die gestrichelte senkrechte Linie den Graphen nur <strong>einmal</strong> — zu jedem \\(x\\) gehört genau ein \\(y\\). Rechts trifft sie den Bogen <strong>zweimal</strong> — die Zuordnung ist nicht eindeutig, also keine Funktion.</p>` },
+  { titel: 'Der Linientest',
+    html: `
+<p>Mit dem <strong>Linientest</strong> prüfst du am Graphen, ob eine Funktion vorliegt:</p>
+<p>Denke dir alle möglichen <strong>Parallelen zur y-Achse</strong> (senkrechte Linien). Der Graph gehört genau dann zu einer Funktion, wenn <strong>jede</strong> dieser Linien den Graphen <strong>höchstens einmal</strong> schneidet.</p>
+<ul>
+  <li>Höchstens ein Schnittpunkt überall → Funktion ✓</li>
+  <li>Irgendwo zwei oder mehr Schnittpunkte → keine Funktion ✗ (denn dann hätte eine Stelle \\(x\\) mehrere Funktionswerte)</li>
+</ul>
+<p><strong>Beispiel:</strong> Ein Kreis besteht keine senkrechte Linie durch sein Inneres — sie schneidet ihn zweimal. Ein Kreis ist also kein Funktionsgraph. Eine Parabel besteht den Test dagegen überall.</p>` },
+  { titel: 'Definitions- und Wertebereich',
+    html: `
+<p>Der <strong>Definitionsbereich</strong> \\(D\\) ist die Menge aller \\(x\\)-Werte, die du einsetzen darfst. Der <strong>Wertebereich</strong> \\(W\\) ist die Menge aller Funktionswerte, die dabei herauskommen.</p>
+<p><strong>Beispiel 1:</strong> \\(f(x) = \\sqrt{x}\\). Unter der Wurzel darf nichts Negatives stehen:</p>
+<p>$$D = [0\\,;\\,\\infty[ \\qquad W = [0\\,;\\,\\infty[ $$</p>
+<p><strong>Beispiel 2:</strong> \\(g(x) = \\dfrac{1}{x}\\). Durch \\(0\\) darf man nicht teilen, und \\(\\frac{1}{x}\\) wird selbst nie \\(0\\):</p>
+<p>$$D = \\mathbb{R} \\setminus \\{0\\} \\qquad W = \\mathbb{R} \\setminus \\{0\\} $$</p>
+<p><strong>Schreibweisen:</strong> \\([0\\,;\\,\\infty[\\) ist die <em>Intervallschreibweise</em> (eckige Klammer nach außen = offen, die \\(\\infty\\)-Seite ist immer offen). \\(\\mathbb{R} \\setminus \\{0\\}\\) ist <em>Mengenschreibweise</em>: „alle reellen Zahlen ohne die \\(0\\)".</p>` },
+  { titel: 'Funktionsvorschrift, Wertetabelle, Symmetrie',
+    html: `
+<p>Eine Funktion kannst du auf mehrere Arten angeben:</p>
+<ul>
+  <li><strong>Zuordnungsvorschrift:</strong> \\(x \\longmapsto 2x + 1\\)</li>
+  <li><strong>Funktionsgleichung:</strong> \\(f(x) = 2x + 1\\)</li>
+  <li><strong>Wertetabelle:</strong> einige Stellen mit ihren Funktionswerten, z. B. für \\(f(x) = 2x + 1\\):</li>
+</ul>
+<p style="text-align:center;">\\(\\begin{array}{c|c|c|c|c} x & 0 & 1 & 2 & 3 \\\\ \\hline f(x) & 1 & 3 & 5 & 7 \\end{array}\\)</p>
+<p><strong>Symmetrie</strong> erkennst du rechnerisch, indem du \\(-x\\) einsetzt:</p>
+<ul>
+  <li><strong>Achsensymmetrie</strong> zur y-Achse: \\(f(-x) = f(x)\\). Beispiel: \\(f(x) = x^2\\), denn \\(f(-x) = (-x)^2 = x^2 = f(x)\\).</li>
+  <li><strong>Punktsymmetrie</strong> zum Ursprung: \\(f(-x) = -f(x)\\). Beispiel: \\(f(x) = x^3\\), denn \\(f(-x) = (-x)^3 = -x^3 = -f(x)\\).</li>
+</ul>` }
+];
+
+// ── Workout ─────────────────────────────────────────────────
+const AUFGABEN = [
+  // Stufe 1
+  { id: 1, stufe: 1, typ: 'mc',
+    frage: 'Zu welcher der beschriebenen Kurven gehört ein Funktionsgraph? (Denk an den Linientest!)',
+    optionen: [
+      'Eine Parabel, die nach oben geöffnet ist.',
+      'Ein Kreis um den Ursprung mit Radius \\(2\\).',
+      'Eine senkrechte Gerade durch \\(x = 3\\).'
+    ],
+    korrekt: 0,
+    tipp: 'Linientest: Jede Parallele zur y-Achse darf den Graphen höchstens einmal schneiden.',
+    loesungsweg: 'Die Parabel besteht den Linientest: Jede senkrechte Linie schneidet sie genau einmal — Funktion ✓. Den Kreis schneidet eine senkrechte Linie durch sein Inneres zweimal ✗. Die senkrechte Gerade \\(x = 3\\) wird von der Linie \\(x = 3\\) sogar in unendlich vielen Punkten getroffen ✗.' },
+  { id: 2, stufe: 1, typ: 'zuordnung',
+    frage: 'Ordne jedem Funktionsterm seinen maximalen Definitionsbereich zu.',
+    paare: [
+      { links: '\\(f(x) = \\sqrt{x - 2}\\)', rechts: '\\(D = [2\\,;\\,\\infty[\\)' },
+      { links: '\\(f(x) = \\dfrac{1}{x + 1}\\)', rechts: '\\(D = \\mathbb{R} \\setminus \\{-1\\}\\)' },
+      { links: '\\(f(x) = x^2\\)', rechts: '\\(D = \\mathbb{R}\\)' },
+      { links: '\\(f(x) = \\dfrac{1}{x^2}\\)', rechts: '\\(D = \\mathbb{R} \\setminus \\{0\\}\\)' }
+    ],
+    tipp: 'Zwei Verbote: Unter der Wurzel nichts Negatives, im Nenner keine \\(0\\). Wo passiert das jeweils?',
+    loesungsweg: '\\(\\sqrt{x-2}\\): Radikand \\(\\geq 0\\), also \\(x \\geq 2\\). \\(\\frac{1}{x+1}\\): Nenner \\(= 0\\) bei \\(x = -1\\), also \\(\\mathbb{R} \\setminus \\{-1\\}\\). \\(x^2\\): keine Einschränkung, \\(D = \\mathbb{R}\\). \\(\\frac{1}{x^2}\\): Nenner \\(= 0\\) nur bei \\(x = 0\\), also \\(\\mathbb{R} \\setminus \\{0\\}\\).' },
+  { id: 3, stufe: 1, typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = 2x^2 - 3\\). Berechne \\(f(3)\\).',
+    loesung: 15,
+    tipp: 'Erst quadrieren, dann mit \\(2\\) multiplizieren, zuletzt \\(3\\) abziehen.',
+    loesungsweg: '\\(f(3) = 2 \\cdot 3^2 - 3 = 2 \\cdot 9 - 3 = 18 - 3 = 15\\).' },
+  { id: 4, stufe: 1, typ: 'mc',
+    frage: 'Was ist der Wertebereich von \\(f(x) = x^2 + 1\\)?',
+    optionen: [
+      '\\(W = [1\\,;\\,\\infty[\\)',
+      '\\(W = \\mathbb{R}\\)',
+      '\\(W = [0\\,;\\,\\infty[\\)',
+      '\\(W = ]1\\,;\\,\\infty[\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Wie klein kann \\(x^2\\) höchstens werden? Was passiert dann durch das \\(+1\\)?',
+    loesungsweg: '\\(x^2 \\geq 0\\) für alle \\(x\\), der kleinste Wert \\(0\\) wird bei \\(x = 0\\) erreicht. Also ist \\(x^2 + 1 \\geq 1\\), und der Wert \\(1\\) wird tatsächlich angenommen: \\(W = [1\\,;\\,\\infty[\\).' },
+  { id: 5, stufe: 1, typ: 'multi',
+    frage: 'Welche Aussagen sind wahr? (Mehrere Antworten möglich.)',
+    optionen: [
+      'Eine Funktion ordnet jedem \\(x\\)-Wert genau einen \\(y\\)-Wert zu.',
+      '\\(f(2) = 9\\) bedeutet: Der Punkt \\((2\\,|\\,9)\\) liegt auf dem Graphen von \\(f\\).',
+      'Zwei verschiedene Stellen dürfen denselben Funktionswert haben.',
+      '\\(f(2) = 9\\) bedeutet: Der Punkt \\((9\\,|\\,2)\\) liegt auf dem Graphen von \\(f\\).',
+      'Ein Kreis ist der Graph einer Funktion.'
+    ],
+    korrekt: [0, 1, 2],
+    tipp: '„Eindeutig" heißt: pro Stelle genau ein Funktionswert. Umgekehrt ist es aber erlaubt, dass ein y-Wert mehrfach vorkommt (z. B. bei \\(x^2\\): \\(f(-2) = f(2) = 4\\)).',
+    loesungsweg: 'Wahr sind die ersten drei: Eindeutigkeit gehört zur Definition; \\(f(2) = 9\\) heißt Stelle \\(2\\), Funktionswert \\(9\\), also Punkt \\((2\\,|\\,9)\\); und z. B. bei \\(f(x) = x^2\\) gilt \\(f(-2) = f(2) = 4\\) — erlaubt. Falsch: \\((9\\,|\\,2)\\) vertauscht Stelle und Wert, und ein Kreis fällt beim Linientest durch.' },
+  { id: 6, stufe: 1, typ: 'numerisch',
+    frage: 'Die Wertetabelle gehört zu einer linearen Funktion: \\(\\begin{array}{c|c|c|c|c} x & 0 & 1 & 2 & 3 \\\\ \\hline f(x) & 1 & 3 & 5 & \\;?\\; \\end{array}\\) Bestimme den fehlenden Wert \\(f(3)\\).',
+    loesung: 7,
+    tipp: 'Bei einer linearen Funktion wächst \\(f(x)\\) bei jedem Schritt um denselben Betrag. Um wie viel wächst es hier pro Schritt?',
+    loesungsweg: 'Von Spalte zu Spalte wächst \\(f(x)\\) immer um \\(2\\) (von \\(1\\) auf \\(3\\) auf \\(5\\)). Also \\(f(3) = 5 + 2 = 7\\). (Die Funktion ist \\(f(x) = 2x + 1\\), Probe: \\(2 \\cdot 3 + 1 = 7\\).)' },
+  // Stufe 2
+  { id: 7, stufe: 2, typ: 'mc',
+    frage: 'Untersuche \\(f(x) = 3x^4 - x^2\\) rechnerisch auf Symmetrie. Welche Rechnung und Folgerung ist richtig?',
+    optionen: [
+      '\\(f(-x) = 3x^4 - x^2 = f(x)\\) — achsensymmetrisch zur y-Achse',
+      '\\(f(-x) = -3x^4 + x^2 = -f(x)\\) — punktsymmetrisch zum Ursprung',
+      '\\(f(-x) = 3x^4 + x^2\\) — keine Symmetrie'
+    ],
+    korrekt: 0,
+    tipp: 'Setze \\(-x\\) ein: \\((-x)^4 = x^4\\) und \\((-x)^2 = x^2\\), denn gerade Exponenten „schlucken" das Minus.',
+    loesungsweg: '\\(f(-x) = 3(-x)^4 - (-x)^2 = 3x^4 - x^2 = f(x)\\). Da beide Exponenten gerade sind, verschwinden alle Minuszeichen — der Graph ist achsensymmetrisch zur y-Achse.' },
+  { id: 8, stufe: 2, typ: 'mc',
+    frage: 'Welche Symmetrie hat der Graph von \\(f(x) = x^3 - 4x\\)?',
+    optionen: [
+      'Punktsymmetrisch zum Ursprung, denn \\(f(-x) = -x^3 + 4x = -f(x)\\)',
+      'Achsensymmetrisch zur y-Achse, denn \\(f(-x) = x^3 - 4x = f(x)\\)',
+      'Keine Symmetrie, denn \\(f(-x) = x^3 + 4x\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Ungerade Exponenten (\\(x^3\\) und \\(x^1\\)) behalten das Minus: \\((-x)^3 = -x^3\\).',
+    loesungsweg: '\\(f(-x) = (-x)^3 - 4(-x) = -x^3 + 4x = -(x^3 - 4x) = -f(x)\\). Alle Exponenten sind ungerade, also punktsymmetrisch zum Ursprung.' },
+  { id: 9, stufe: 2, typ: 'zuordnung',
+    frage: 'Ordne jeder verbalen Zuordnungsbeschreibung den passenden Funktionsterm zu.',
+    paare: [
+      { links: '„ordnet jeder Zahl ihr Dreifaches vermindert um \\(1\\) zu"', rechts: '\\(f(x) = 3x - 1\\)' },
+      { links: '„ordnet jeder Zahl ihr Quadrat vermehrt um \\(2\\) zu"', rechts: '\\(f(x) = x^2 + 2\\)' },
+      { links: '„ordnet jeder Zahl die Hälfte ihres Nachfolgers zu"', rechts: '\\(f(x) = \\dfrac{x + 1}{2}\\)' },
+      { links: '„ordnet jeder positiven Zahl ihren Kehrwert zu"', rechts: '\\(f(x) = \\dfrac{1}{x}\\)' }
+    ],
+    tipp: 'Übersetze Schritt für Schritt: „Dreifaches" \\(= 3x\\), „vermindert um 1" \\(= -1\\), „Nachfolger" \\(= x + 1\\), „Kehrwert" \\(= \\frac{1}{x}\\).',
+    loesungsweg: '„Dreifaches vermindert um 1": \\(3x - 1\\). „Quadrat vermehrt um 2": \\(x^2 + 2\\). „Hälfte des Nachfolgers": erst \\(x + 1\\), dann halbieren, also \\(\\frac{x+1}{2}\\). „Kehrwert": \\(\\frac{1}{x}\\).' },
+  { id: 10, stufe: 2, typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = x^2 - 5\\). Bestimme die positive Stelle \\(x\\) mit \\(f(x) = 4\\).',
+    loesung: 3,
+    tipp: 'Setze den Funktionsterm gleich \\(4\\) und löse nach \\(x\\) auf. Gesucht ist nur die positive Lösung.',
+    loesungsweg: '\\(x^2 - 5 = 4 \\;\\Rightarrow\\; x^2 = 9 \\;\\Rightarrow\\; x = 3\\) oder \\(x = -3\\). Gesucht ist die positive Stelle: \\(x = 3\\). (Probe: \\(f(3) = 9 - 5 = 4\\).)' }
+];
+</script>
+<script src="../fit-engine.js"></script>
+</body>
+</html>
