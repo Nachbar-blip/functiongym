@@ -145,7 +145,7 @@ const AUFGABEN = [
   { id: 3, stufe: 1, typ: 'numerisch',
     frage: 'Gegeben ist \\(f(x) = 2x^2 - 3\\). Berechne \\(f(3)\\).',
     loesung: 15,
-    tipp: 'Erst quadrieren, dann mit \\(2\\) multiplizieren, zuletzt \\(3\\) abziehen.',
+    tipp: 'Ersetze jedes \\(x\\) durch die eingesetzte Zahl und halte dich an „Potenz vor Punkt vor Strich“.',
     loesungsweg: '\\(f(3) = 2 \\cdot 3^2 - 3 = 2 \\cdot 9 - 3 = 18 - 3 = 15\\).' },
   { id: 4, stufe: 1, typ: 'mc',
     frage: 'Was ist der Wertebereich von \\(f(x) = x^2 + 1\\)?',
@@ -168,8 +168,8 @@ const AUFGABEN = [
       'Ein Kreis ist der Graph einer Funktion.'
     ],
     korrekt: [0, 1, 2],
-    tipp: '„Eindeutig" heißt: pro Stelle genau ein Funktionswert. Umgekehrt ist es aber erlaubt, dass ein y-Wert mehrfach vorkommt (z. B. bei \\(x^2\\): \\(f(-2) = f(2) = 4\\)).',
-    loesungsweg: 'Wahr sind die ersten drei: Eindeutigkeit gehört zur Definition; \\(f(2) = 9\\) heißt Stelle \\(2\\), Funktionswert \\(9\\), also Punkt \\((2\\,|\\,9)\\); und z. B. bei \\(f(x) = x^2\\) gilt \\(f(-2) = f(2) = 4\\) — erlaubt. Falsch: \\((9\\,|\\,2)\\) vertauscht Stelle und Wert, und ein Kreis fällt beim Linientest durch.' },
+    tipp: '„Eindeutig" heißt: pro Stelle genau ein Funktionswert. Prüfe jede Aussage einzeln — und achte darauf, ob Stelle und Funktionswert richtig herum verwendet werden.',
+    loesungsweg: 'Wahr sind drei Aussagen: Eindeutigkeit gehört zur Definition; \\(f(2) = 9\\) heißt Stelle \\(2\\), Funktionswert \\(9\\), also Punkt \\((2\\,|\\,9)\\); und z. B. bei \\(f(x) = x^2\\) gilt \\(f(-2) = f(2) = 4\\) — erlaubt. Falsch: \\((9\\,|\\,2)\\) vertauscht Stelle und Wert, und ein Kreis fällt beim Linientest durch.' },
   { id: 6, stufe: 1, typ: 'numerisch',
     frage: 'Die Wertetabelle gehört zu einer linearen Funktion: \\(\\begin{array}{c|c|c|c|c} x & 0 & 1 & 2 & 3 \\\\ \\hline f(x) & 1 & 3 & 5 & \\;?\\; \\end{array}\\) Bestimme den fehlenden Wert \\(f(3)\\).',
     loesung: 7,
@@ -184,7 +184,7 @@ const AUFGABEN = [
       '\\(f(-x) = 3x^4 + x^2\\) — keine Symmetrie'
     ],
     korrekt: 0,
-    tipp: 'Setze \\(-x\\) ein: \\((-x)^4 = x^4\\) und \\((-x)^2 = x^2\\), denn gerade Exponenten „schlucken" das Minus.',
+    tipp: 'Setze \\(-x\\) statt \\(x\\) ein und überlege bei jedem Summanden einzeln, ob das Minuszeichen überlebt. Entscheidend ist, ob der Exponent gerade oder ungerade ist.',
     loesungsweg: '\\(f(-x) = 3(-x)^4 - (-x)^2 = 3x^4 - x^2 = f(x)\\). Da beide Exponenten gerade sind, verschwinden alle Minuszeichen — der Graph ist achsensymmetrisch zur y-Achse.' },
   { id: 8, stufe: 2, typ: 'mc',
     frage: 'Welche Symmetrie hat der Graph von \\(f(x) = x^3 - 4x\\)?',
@@ -194,7 +194,7 @@ const AUFGABEN = [
       'Keine Symmetrie, denn \\(f(-x) = x^3 + 4x\\)'
     ],
     korrekt: 0,
-    tipp: 'Ungerade Exponenten (\\(x^3\\) und \\(x^1\\)) behalten das Minus: \\((-x)^3 = -x^3\\).',
+    tipp: 'Setze \\(-x\\) ein und schau, ob am Ende \\(f(x)\\), \\(-f(x)\\) oder keines von beiden herauskommt. Sieh dir dazu die Exponenten an.',
     loesungsweg: '\\(f(-x) = (-x)^3 - 4(-x) = -x^3 + 4x = -(x^3 - 4x) = -f(x)\\). Alle Exponenten sind ungerade, also punktsymmetrisch zum Ursprung.' },
   { id: 9, stufe: 2, typ: 'zuordnung',
     frage: 'Ordne jeder verbalen Zuordnungsbeschreibung den passenden Funktionsterm zu.',
@@ -204,7 +204,7 @@ const AUFGABEN = [
       { links: '„ordnet jeder Zahl die Hälfte ihres Nachfolgers zu"', rechts: '\\(f(x) = \\dfrac{x + 1}{2}\\)' },
       { links: '„ordnet jeder positiven Zahl ihren Kehrwert zu"', rechts: '\\(f(x) = \\dfrac{1}{x}\\)' }
     ],
-    tipp: 'Übersetze Schritt für Schritt: „Dreifaches" \\(= 3x\\), „vermindert um 1" \\(= -1\\), „Nachfolger" \\(= x + 1\\), „Kehrwert" \\(= \\frac{1}{x}\\).',
+    tipp: 'Zerlege jede Beschreibung in ihre Bausteine und übersetze sie der Reihe nach. Achte darauf, worauf sich das letzte Wort bezieht — „Hälfte des Nachfolgers" ist nicht „Nachfolger der Hälfte".',
     loesungsweg: '„Dreifaches vermindert um 1": \\(3x - 1\\). „Quadrat vermehrt um 2": \\(x^2 + 2\\). „Hälfte des Nachfolgers": erst \\(x + 1\\), dann halbieren, also \\(\\frac{x+1}{2}\\). „Kehrwert": \\(\\frac{1}{x}\\).' },
   { id: 10, stufe: 2, typ: 'numerisch',
     frage: 'Gegeben ist \\(f(x) = x^2 - 5\\). Bestimme die positive Stelle \\(x\\) mit \\(f(x) = 4\\).',

@@ -3,6 +3,7 @@
 from helpers import (
     load_gym, datei_inhalt, setup_console_error_capture, kritische_fehler,
     beantworte_aktuelle_aufgabe, beantworte_aktuelle_aufgabe_falsch,
+    klartext, ohne_leerzeichen, zahl_varianten, enthaelt_zahl,
 )
 
 
@@ -43,6 +44,41 @@ class TestGymStatisch:
                 wert = a.get(feld)
                 assert isinstance(wert, str) and wert.strip(), \
                     f"{gym_file}: Aufgabe {a.get('id')}: {feld} fehlt/leer"
+
+    def test_tipp_verraet_loesung_nicht(self, page, gym_file):
+        """Kein tipp nennt die Loesung.
+
+        Ein Tipp soll auf das Vorgehen zeigen, nicht das Ergebnis vorgeben.
+        Geprueft wird: (a) der Loesungswert numerischer Aufgaben steht nicht im
+        Tipp, (b) der Text der richtigen MC-Option steht nicht woertlich drin.
+        Zahlen, die schon in der Frage stehen (etwa der einzusetzende x-Wert),
+        gelten nicht als Verrat.
+        """
+        load_gym(page, gym_file)
+        aufgaben = page.evaluate("AUFGABEN")
+        verrat = []
+        for a in aufgaben:
+            tipp = klartext(a.get("tipp") or "")
+            frage = klartext(a.get("frage") or "")
+            if not tipp:
+                continue
+
+            loesung = a.get("loesung")
+            if isinstance(loesung, (int, float)) and not isinstance(loesung, bool):
+                for kand in zahl_varianten(loesung):
+                    if enthaelt_zahl(tipp, kand) and not enthaelt_zahl(frage, kand):
+                        verrat.append(f"Aufgabe {a.get('id')}: Loesung "
+                                      f"{kand!r} steht im Tipp")
+                        break
+
+            korrekt, optionen = a.get("korrekt"), a.get("optionen")
+            if isinstance(korrekt, int) and optionen:
+                option = ohne_leerzeichen(klartext(optionen[korrekt]))
+                if len(option) >= 8 and option in ohne_leerzeichen(tipp):
+                    verrat.append(f"Aufgabe {a.get('id')}: richtige MC-Option "
+                                  f"steht woertlich im Tipp")
+
+        assert not verrat, f"{gym_file}: " + "; ".join(verrat)
 
     def test_diagnose(self, page, gym_file):
         """DIAGNOSE hat 3-4 Eintraege, jede mit loesungsweg."""

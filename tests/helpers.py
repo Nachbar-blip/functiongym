@@ -1,5 +1,7 @@
 """Hilfsfunktionen fuer die FunctionGym-Playwright-Tests."""
 
+import re
+
 from playwright.sync_api import Page
 
 from conftest import BASE_URL, GYM_DIR
@@ -101,3 +103,44 @@ def beantworte_aktuelle_aufgabe_falsch(page: Page):
 
     page.wait_for_selector("#feedback .fit-feedback-falsch", timeout=5000)
     page.click("#btnWeiter")
+
+
+def klartext(text: str) -> str:
+    """Entfernt HTML-Tags, LaTeX-Befehle und Formel-Klammern aus einem Text.
+
+    Uebrig bleibt der lesbare Inhalt samt Zahlen — die Grundlage fuer den
+    Vergleich von Tipp, Frage und Antwortoptionen.
+    """
+    text = re.sub(r"<[^>]*>", " ", text)
+    text = re.sub(r"\[a-zA-Z]+", " ", text)
+    text = re.sub(r"[{}()\\[\]]", " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def ohne_leerzeichen(text: str) -> str:
+    """Text ohne jedes Leerzeichen — fuer robusten Woertlich-Vergleich."""
+    return re.sub(r"\s+", "", text)
+
+
+def zahl_varianten(wert) -> list:
+    """Schreibweisen, in denen ein Loesungswert im Text auftauchen kann.
+
+    Deckt Punkt- und Komma-Dezimaltrennung sowie die auf zwei Stellen
+    gerundete Form ab (etwa 2/3 als 0,67).
+    """
+    varianten = []
+    for zahl in (wert, round(float(wert), 2)):
+        roh = ("%g" % zahl) if isinstance(zahl, float) else str(zahl)
+        for form in (roh, roh.replace(".", ",")):
+            if form not in varianten:
+                varianten.append(form)
+    return varianten
+
+
+def enthaelt_zahl(text: str, zahl: str) -> bool:
+    """Prueft, ob `zahl` als eigenstaendige Zahl in `text` vorkommt.
+
+    Verhindert Falschtreffer wie die 3 in 32 oder in 0,39.
+    """
+    muster = r"(?<![0-9,.])" + re.escape(zahl) + r"(?![0-9,.])"
+    return re.search(muster, text) is not None

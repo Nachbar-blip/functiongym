@@ -137,7 +137,7 @@ const AUFGABEN = [
       '\\(S(4\\,|\\,1)\\)'
     ],
     korrekt: 0,
-    tipp: 'Vergleiche mit \\(f(x) = a(x - d)^2 + e\\): Schreibe die Klammer als \\(x - (-4)\\), um \\(d\\) zu erkennen.',
+    tipp: 'Vergleiche mit \\(f(x) = a(x - d)^2 + e\\). In der Klammer steht hier ein Plus — was bedeutet das für das Vorzeichen von \\(d\\)?',
     loesungsweg: '\\((x + 4)^2 = (x - (-4))^2\\), also \\(d = -4\\). Dahinter steht \\(-1\\), also \\(e = -1\\). Scheitelpunkt: \\(S(-4\\,|\\,-1)\\).' },
   { id: 2, stufe: 1, typ: 'zuordnung',
     frage: 'Ordne jeder Gleichung zu, wie ihr Graph aus der Normalparabel \\(y = x^2\\) entsteht.',
@@ -152,12 +152,12 @@ const AUFGABEN = [
   { id: 3, stufe: 1, typ: 'numerisch',
     frage: 'Gegeben ist \\(f(x) = x^2 + 4x\\). Berechne die negative Nullstelle.',
     loesung: -4,
-    tipp: 'Hier ist \\(c = 0\\): Klammere \\(x\\) aus und nutze den Satz vom Nullprodukt.',
+    tipp: 'Es gibt kein absolutes Glied — dafür brauchst du keine Formel, sondern einen gemeinsamen Faktor. Ein Produkt ist null, sobald einer der Faktoren null ist.',
     loesungsweg: '\\(x^2 + 4x = x(x + 4) = 0\\). Ein Faktor muss null sein: \\(x_1 = 0\\) oder \\(x + 4 = 0 \\Rightarrow x_2 = -4\\). Die negative Nullstelle ist \\(-4\\).' },
   { id: 4, stufe: 1, typ: 'numerisch',
     frage: 'Löse \\(x^2 - 6x + 8 = 0\\) mit der pq-Formel. Gib die größere Lösung an.',
     loesung: 4,
-    tipp: 'Hier ist \\(p = -6\\) und \\(q = 8\\). Also \\(-\\frac{p}{2} = 3\\). Was steht unter der Wurzel?',
+    tipp: 'Lies \\(p\\) und \\(q\\) aus der Form \\(x^2 + px + q = 0\\) ab — mit Vorzeichen. Denk an das Minus vor \\(\\frac{p}{2}\\).',
     loesungsweg: '\\(x_{1,2} = 3 \\pm \\sqrt{9 - 8} = 3 \\pm 1\\). Also \\(x_1 = 2\\) und \\(x_2 = 4\\). Die größere Lösung ist \\(x = 4\\).' },
   { id: 5, stufe: 1, typ: 'mc',
     frage: 'Welche Normalform gehört zu \\(f(x) = (x - 1)^2 + 2\\)?',
@@ -168,7 +168,7 @@ const AUFGABEN = [
       '\\(f(x) = x^2 - x + 3\\)'
     ],
     korrekt: 0,
-    tipp: 'Binomische Formel: \\((x - 1)^2 = x^2 - 2x + 1\\). Dann die \\(+2\\) nicht vergessen.',
+    tipp: 'Löse die Klammer mit der passenden binomischen Formel auf und fasse erst danach mit der Zahl dahinter zusammen. Achte auf das Vorzeichen im mittleren Glied.',
     loesungsweg: '\\((x - 1)^2 + 2 = x^2 - 2x + 1 + 2 = x^2 - 2x + 3\\).' },
   { id: 6, stufe: 1, typ: 'numerisch',
     frage: 'Gegeben ist \\(f(x) = 2(x - 1)^2 - 5\\). Berechne \\(f(3)\\).',
@@ -179,7 +179,7 @@ const AUFGABEN = [
   { id: 7, stufe: 2, typ: 'numerisch',
     frage: 'Bringe \\(f(x) = x^2 - 8x + 11\\) mit quadratischer Ergänzung in die Scheitelpunktform. Gib die y-Koordinate des Scheitelpunkts an.',
     loesung: -5,
-    tipp: 'Ergänze mit \\(\\left(\\frac{8}{2}\\right)^2 = 16\\): addieren und sofort wieder abziehen.',
+    tipp: 'Nimm die Hälfte der Zahl vor dem \\(x\\) und quadriere sie. Diesen Term addierst du und ziehst ihn im selben Schritt wieder ab, damit sich der Wert nicht ändert.',
     loesungsweg: '\\(f(x) = x^2 - 8x + 16 - 16 + 11 = (x - 4)^2 - 5\\). Der Scheitelpunkt ist \\(S(4\\,|\\,-5)\\), die y-Koordinate also \\(-5\\).' },
   { id: 8, stufe: 2, typ: 'mc',
     frage: 'Eine Parabel hat die Nullstellen \\(x_1 = -1\\) und \\(x_2 = 3\\) sowie den Streckfaktor \\(a = 2\\). Wie lautet ihre faktorisierte Form?',
@@ -190,7 +190,7 @@ const AUFGABEN = [
       '\\(f(x) = 2(x + 1)(x + 3)\\)'
     ],
     korrekt: 0,
-    tipp: 'Faktorisierte Form: \\(f(x) = a(x - x_1)(x - x_2)\\) — die Nullstellen werden mit umgedrehtem Vorzeichen eingesetzt.',
+    tipp: 'Überlege, wie eine Klammer aussehen muss, damit sie beim Einsetzen der jeweiligen Nullstelle null wird — und wo der Streckfaktor stehen muss, damit er die Nullstellen nicht verschiebt.',
     loesungsweg: '\\(f(x) = a(x - x_1)(x - x_2) = 2(x - (-1))(x - 3) = 2(x + 1)(x - 3)\\). Probe: Bei \\(x = -1\\) und \\(x = 3\\) wird je eine Klammer null.' },
   { id: 9, stufe: 2, typ: 'numerisch',
     frage: 'Eine Parabel \\(f(x) = a(x - 2)^2 + 1\\) hat den Scheitelpunkt \\(S(2\\,|\\,1)\\) und verläuft durch \\(P(4\\,|\\,4)\\). Bestimme \\(a\\). (Bruch wie 3/4 oder Dezimalwert möglich.)',
@@ -201,7 +201,7 @@ const AUFGABEN = [
   { id: 10, stufe: 2, typ: 'numerisch',
     frage: 'Die Parabel \\(f(x) = x^2 + 1\\) und die Gerade \\(g(x) = 2x\\) berühren sich in genau einem Punkt. Berechne dessen x-Koordinate.',
     loesung: 1,
-    tipp: 'Gleichsetzen: \\(x^2 + 1 = 2x\\). Bringe alles auf eine Seite — es entsteht eine binomische Formel.',
+    tipp: 'Berühren heißt: gleiche Stelle, gleicher Funktionswert. Setze die Terme gleich, bringe alles auf eine Seite und schau dir den entstandenen Term genau an.',
     loesungsweg: '\\(x^2 + 1 = 2x \\;\\Rightarrow\\; x^2 - 2x + 1 = 0 \\;\\Rightarrow\\; (x - 1)^2 = 0 \\;\\Rightarrow\\; x = 1\\). (Zur Kontrolle: \\(f(1) = 2 = g(1)\\).)' },
   { id: 11, stufe: 2, typ: 'mc',
     frage: 'Ein Ball wird geworfen. Seine Höhe (in m) nach \\(t\\) Sekunden ist \\(h(t) = -5(t - 1)^2 + 6\\). Wie hoch fliegt der Ball maximal?',
@@ -212,7 +212,7 @@ const AUFGABEN = [
       '\\(11\\) m'
     ],
     korrekt: 0,
-    tipp: 'Die maximale Höhe ist die y-Koordinate des Scheitelpunkts — bei der Scheitelpunktform direkt ablesbar.',
+    tipp: 'Schau auf das Vorzeichen von \\(a\\): Ist der Scheitel höchster oder tiefster Punkt? Und welche seiner beiden Koordinaten ist überhaupt eine Höhe?',
     loesungsweg: 'Wegen \\(a = -5 < 0\\) ist die Parabel nach unten geöffnet, der Scheitel also der höchste Punkt. Aus \\(h(t) = -5(t - 1)^2 + 6\\) liest man \\(S(1\\,|\\,6)\\) ab: Nach 1 Sekunde erreicht der Ball die maximale Höhe von 6 m.' }
 ];
 </script>

@@ -146,7 +146,7 @@ const AUFGABEN = [
     ],
     korrekt: [0, 1, 2],
     tipp: 'Denk an die Graphen von \\(x^2\\) (U-Form) und \\(x^3\\) (S-Form): Wo liegen sie, welche Symmetrie haben sie?',
-    loesungsweg: 'Gerades \\(n\\): U-Form, achsensymmetrisch, Werte nie negativ — also stimmen die Aussagen 1 und 3, und der Graph verläuft durch den I. und <em>II.</em> Quadranten (nicht III.). Ungerades \\(n\\): punktsymmetrisch (Aussage 2 stimmt), aber für negative \\(x\\) sind die Werte negativ — Aussage 4 ist falsch.' },
+    loesungsweg: 'Gerades \\(n\\): U-Form, achsensymmetrisch zur y-Achse ✓, und \\(x^4\\) wird nie negativ ✓ — der Graph verläuft aber durch den I. und <em>II.</em> Quadranten, nicht durch den III. ✗. Ungerades \\(n\\): punktsymmetrisch zum Ursprung ✓, aber für negative \\(x\\) sind die Werte negativ, also sind nicht alle Funktionswerte positiv ✗.' },
   { id: 2, stufe: 1, typ: 'zuordnung',
     frage: 'Ordne jeder Funktionsgleichung die passende Graph-Beschreibung zu.',
     paare: [
@@ -160,7 +160,7 @@ const AUFGABEN = [
   { id: 3, stufe: 1, typ: 'numerisch',
     frage: 'Gegeben ist \\(f(x) = 2x^3\\). Berechne \\(f(3)\\).',
     loesung: 54,
-    tipp: 'Erst potenzieren, dann mit 2 multiplizieren — Potenz vor Punktrechnung.',
+    tipp: 'Der Exponent gehört nur zum \\(x\\), nicht zum Faktor davor — Potenz vor Punktrechnung.',
     loesungsweg: '\\(f(3) = 2 \\cdot 3^3 = 2 \\cdot 27 = 54\\). Achtung: \\(2 \\cdot 3^3\\) ist nicht \\((2 \\cdot 3)^3 = 216\\)!' },
   { id: 4, stufe: 1, typ: 'numerisch',
     frage: 'Löse die Gleichung \\(x^3 = -27\\).',
@@ -181,7 +181,7 @@ const AUFGABEN = [
   { id: 6, stufe: 1, typ: 'numerisch',
     frage: 'Gegeben ist \\(f(x) = \\sqrt{x} + 1\\). Berechne \\(f(9)\\).',
     loesung: 4,
-    tipp: 'Erst die Wurzel aus 9 ziehen, dann 1 addieren.',
+    tipp: 'Die Wurzel gilt nur für das \\(x\\) — der Summand kommt erst danach dazu.',
     loesungsweg: '\\(f(9) = \\sqrt{9} + 1 = 3 + 1 = 4\\).' },
   // Stufe 2
   { id: 7, stufe: 2, typ: 'numerisch',
@@ -198,17 +198,17 @@ const AUFGABEN = [
       '\\(y = (2x - 3)^3 + 1\\)'
     ],
     korrekt: 0,
-    tipp: 'Verschiebung nach rechts heißt Minus in der Klammer. Der Streckfaktor steht als Faktor vor der Klammer, nicht innen beim \\(x\\).',
+    tipp: 'Zwei Stolperstellen: das Vorzeichen der waagerechten Verschiebung in der Klammer, und ob der Streckfaktor innen beim \\(x\\) oder außen vor der Klammer wirkt.',
     loesungsweg: 'Streckfaktor 2 als Faktor davor: \\(2(\\ldots)^3\\). Verschiebung um 3 nach <em>rechts</em>: \\((x - 3)\\) — Minus, nicht Plus! Verschiebung um 1 nach oben: \\(+1\\) am Ende. Ergebnis: \\(y = 2(x - 3)^3 + 1\\).' },
   { id: 9, stufe: 2, typ: 'numerisch',
     frage: 'Löse die Gleichung \\(x^{-2} = \\dfrac{1}{25}\\). Gib die positive Lösung an.',
     loesung: 5,
-    tipp: 'Schreibe \\(x^{-2}\\) als Bruch \\(\\frac{1}{x^2}\\) und vergleiche die Nenner.',
+    tipp: 'Was bedeutet ein negativer Exponent? Forme die linke Seite entsprechend um — dann stehen links und rechts vergleichbare Terme.',
     loesungsweg: '\\(x^{-2} = \\frac{1}{x^2} = \\frac{1}{25} \\;\\Rightarrow\\; x^2 = 25 \\;\\Rightarrow\\; x = \\pm 5\\). Die positive Lösung ist \\(x = 5\\).' },
   { id: 10, stufe: 2, typ: 'numerisch',
     frage: 'Der Punkt \\(P(a\\,|\\,4)\\) liegt auf dem Graphen von \\(f(x) = \\sqrt{x - 5}\\). Berechne \\(a\\).',
     loesung: 21,
-    tipp: 'Setze \\(f(a) = 4\\) an und quadriere beide Seiten, um die Wurzel loszuwerden.',
+    tipp: 'Die zweite Koordinate von \\(P\\) ist der Funktionswert an der gesuchten Stelle. Stelle damit eine Gleichung auf — und überlege, wie du eine Wurzel wieder loswirst.',
     loesungsweg: '\\(\\sqrt{a - 5} = 4\\). Quadrieren: \\(a - 5 = 16 \\;\\Rightarrow\\; a = 21\\). Probe: \\(\\sqrt{21 - 5} = \\sqrt{16} = 4\\). Passt.' },
   { id: 11, stufe: 2, typ: 'mc',
     frage: 'Der Graph von \\(y = \\sqrt{x}\\) wird an der x-Achse gespiegelt und um 2 nach links verschoben. Wie lautet die neue Gleichung?',
@@ -219,7 +219,7 @@ const AUFGABEN = [
       '\\(y = -\\sqrt{x} + 2\\)'
     ],
     korrekt: 0,
-    tipp: 'Spiegeln an der x-Achse gibt ein Minus vor der Wurzel. Nach links verschieben heißt Plus in der Wurzel.',
+    tipp: 'Zwei Fragen: Wirkt die Spiegelung an der x-Achse auf den Funktionswert oder auf \\(x\\)? Und in welche Richtung verschiebt ein Plus unter der Wurzel?',
     loesungsweg: 'Spiegelung an der x-Achse: Minus vor die ganze Funktion, also \\(-\\sqrt{\\ldots}\\). Verschiebung um 2 nach <em>links</em>: \\(x + 2\\) unter der Wurzel. Ergebnis: \\(y = -\\sqrt{x + 2}\\). Der neue Startpunkt ist \\((-2\\,|\\,0)\\), der Graph läuft nach unten.' }
 ];
 </script>
