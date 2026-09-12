@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FunctionGym — Das Fitnessstudio für Funktionen</title>
+<link rel="stylesheet" href="fit.css">
+<style>
+  /* Eigenes Startseiten-Styling — nutzt die Farbvariablen aus fit.css */
+  :root { --fit-primary: #312e81; --fit-secondary: #6d28d9; }
+
+  .intro {
+    color: rgba(255, 255, 255, 0.92);
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto 20px;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .gesamt-fortschritt {
+    text-align: center;
+    color: white;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 8px 16px;
+    max-width: 340px;
+    margin: 0 auto 24px;
+  }
+
+  .karten {
+    display: grid;
+    /* minmax(0,1fr): verhindert, dass lange Kartennamen die Spalte
+       über die Viewport-Breite hinausdrücken (Mobile-Overflow) */
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  @media (min-width: 640px) {
+    .karten { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  }
+
+  .karte {
+    display: block;
+    background: white;
+    border-radius: 14px;
+    padding: 16px 18px;
+    text-decoration: none;
+    color: #1f2937;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .karte:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+  .karte.gesperrt {
+    opacity: 0.65;
+    pointer-events: none; /* nicht klickbar, solange Datei fehlt */
+  }
+
+  .karte-kopf {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .karte-icon { font-size: 1.5rem; }
+  .karte-name { font-weight: 700; font-size: 1.05rem; flex: 1; min-width: 0; }
+
+  .badge-bald {
+    background: #e5e7eb;
+    color: #6b7280;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  .karte-status {
+    font-size: 0.85rem;
+    color: #4b5563;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .check-ok { color: #16a34a; font-weight: 600; }
+
+  .quote-balken {
+    flex: 1;
+    min-width: 90px;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .quote-balken > div {
+    height: 100%;
+    background: linear-gradient(90deg, var(--fit-primary), var(--fit-secondary));
+    border-radius: 4px;
+  }
+
+  footer {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    margin-top: 28px;
+  }
+</style>
+</head>
+<body>
+<div class="fit-container">
+  <header>
+    <h1>🏋️ FunctionGym</h1>
+    <p>Das Fitnessstudio für Funktionen — mach dich startklar für die Oberstufe</p>
+  </header>
+
+  <p class="intro">
+    Jeder Trainingsbereich startet mit einem kurzen <strong>Eingangscheck</strong>,
+    danach folgen <strong>Technik-Training</strong> und <strong>Workout</strong>.
+    Dein Fortschritt wird nur auf deinem Gerät gespeichert — du kannst jederzeit
+    weitermachen, wo du aufgehört hast.
+  </p>
+
+  <div class="gesamt-fortschritt" id="gesamt"></div>
+
+  <div class="karten" id="karten"></div>
+
+  <footer>Viel Erfolg beim Training! 💪</footer>
+</div>
+
+<script>
+// ── Trainingsbereiche ───────────────────────────────────────
+// VERFUEGBAR: Nur diese Themen-Keys haben bereits eine HTML-Datei.
+// Beim Fertigstellen eines neuen Themas den Key hier ergänzen —
+// keine fetch-Prüfung, da file:// (CORS) das nicht zulässt.
+const VERFUEGBAR = ['fitgym-linear'];
+
+const BEREICHE = [
+  { name: 'Grundbegriffe zu Funktionen',        href: 'gym/grundbegriffe.html',  key: 'fitgym-grundbegriffe', icon: '🧭' },
+  { name: 'Lineare Funktionen',                 href: 'gym/linear.html',         key: 'fitgym-linear',        icon: '📈' },
+  { name: 'Quadratische Funktionen',            href: 'gym/quadratisch.html',    key: 'fitgym-quadratisch',   icon: '🎯' },
+  { name: 'Potenz- und Wurzelfunktionen',       href: 'gym/potenz.html',         key: 'fitgym-potenz',        icon: '⚡' },
+  { name: 'Exponentialfunktionen',              href: 'gym/exponential.html',    key: 'fitgym-exponential',   icon: '🚀' },
+  { name: 'Trigonometrische Funktionen',        href: 'gym/trigonometrie.html',  key: 'fitgym-trigonometrie', icon: '🌊' },
+  { name: 'Misch-Workout: Typische Aufgaben',   href: 'gym/misch-workout.html',  key: 'fitgym-misch',         icon: '🏋️' }
+];
+
+// State eines Themas aus localStorage lesen (defensiv: kaputtes JSON ⇒ null)
+function ladeState(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    return (typeof s === 'object' && s !== null) ? s : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+// Statuszeile einer Karte bauen.
+// Fortschritts-Variante: Wir zeigen die Erfolgsquote totalCorrect/totalAttempts
+// als Balken plus answered.length als "x Übungen geschafft".
+// Grund: Die Gesamtzahl der Aufgaben eines Themas ist auf der Startseite
+// unbekannt (steht nur in der Themen-Datei) — die Quote ist immer auf
+// 0–100 % normierbar und damit die robusteste Balken-Basis; die absolute
+// Übungszahl ergänzt sie ohne Annahmen über das Aufgaben-Total.
+function statusHtml(state) {
+  if (!state) return '<span>Noch nicht gestartet</span>';
+  const teile = [];
+  if (state.diagnose && state.diagnose.done) {
+    teile.push('<span class="check-ok">Eingangscheck ✓</span>');
+  }
+  const geschafft = Array.isArray(state.answered) ? state.answered.length : 0;
+  if (geschafft > 0) {
+    const attempts = state.totalAttempts || 0;
+    const quote = attempts > 0 ? Math.round(100 * (state.totalCorrect || 0) / attempts) : 0;
+    teile.push('<span>' + geschafft + ' Übung' + (geschafft === 1 ? '' : 'en') + ' geschafft</span>');
+    teile.push('<div class="quote-balken" title="Erfolgsquote ' + quote + ' %"><div style="width:' + quote + '%"></div></div>');
+  }
+  if (teile.length === 0) return '<span>Noch nicht gestartet</span>';
+  return teile.join('');
+}
+
+const container = document.getElementById('karten');
+let begonnen = 0;
+
+for (const b of BEREICHE) {
+  const offen = VERFUEGBAR.includes(b.key);
+  const state = ladeState(b.key);
+  if (state && ((state.diagnose && state.diagnose.done) || (Array.isArray(state.answered) && state.answered.length > 0) || (state.diagnose && state.diagnose.gesamt > 0))) {
+    begonnen++;
+  }
+  const karte = document.createElement('a');
+  karte.className = 'karte' + (offen ? '' : ' gesperrt');
+  karte.dataset.key = b.key;
+  if (offen) karte.href = b.href;
+  karte.innerHTML =
+    '<div class="karte-kopf">' +
+      '<span class="karte-icon">' + b.icon + '</span>' +
+      '<span class="karte-name">' + b.name + '</span>' +
+      (offen ? '' : '<span class="badge-bald">Bald verfügbar</span>') +
+    '</div>' +
+    '<div class="karte-status">' + statusHtml(state) + '</div>';
+  container.appendChild(karte);
+}
+
+document.getElementById('gesamt').textContent =
+  begonnen + ' von ' + BEREICHE.length + ' Bereichen begonnen';
+</script>
+</body>
+</html>
