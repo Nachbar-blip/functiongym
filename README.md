@@ -2,6 +2,8 @@
 
 FunctionGym — das Fitnessstudio für Funktionen. Interaktiver Mathe-Trainer zur Wiederholung der Funktionen-Grundlagen für den Übergang in die Oberstufe (E-Phase). Themen: Grundbegriffe, lineare, quadratische, Potenz-/Wurzel-, Exponential- und trigonometrische Funktionen plus Misch-Workout. Statisches HTML, läuft auf GitHub Pages, Fortschritt lokal im Browser (localStorage), keine Accounts.
 
+Jeder der 7 Trainingsbereiche folgt demselben Dreischritt: **Eingangscheck** (kurze Diagnose mit Empfehlung), **Technik-Training** (kompakte Theorie) und **Workout** in zwei Stufen (Grund-Workout / Fortgeschritten). Nach dem Workout gibt es bei mindestens zwei falschen Antworten eine kurze Fehlertyp-Selbsteinschätzung mit passendem Lerntipp.
+
 ## Projektstruktur
 
 ```
