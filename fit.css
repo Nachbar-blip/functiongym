@@ -1,1 +1,808 @@
-/* fit.css — Zentrales Stylesheet für FunctionGym (alle Seiten: index.html und gym/*.html) */
+/* fit.css — geteiltes Stylesheet für FunctionGym (statischer HTML-Mathe-Trainer)
+   Farbvariablen werden pro Thema in den HTML-Dateien überschrieben:
+   --fit-primary, --fit-secondary, --fit-correct, --fit-wrong
+   Standardwerte stehen als Fallback in :root. */
+
+/* ===== Farb-Fallbacks ===== */
+
+:root {
+    --fit-primary: #4338ca;   /* kräftiges Indigo */
+    --fit-secondary: #7c3aed; /* Violett */
+    --fit-correct: #22c55e;
+    --fit-wrong: #ef4444;
+}
+
+/* ===== Reset & Basis ===== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--fit-primary) 0%, var(--fit-secondary) 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.fit-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ===== Kopfbereich ===== */
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 24px;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.back-link {
+    display: inline-block;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-top: 6px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: white;
+}
+
+/* ===== Stepper (3 Phasen: Eingangscheck → Technik → Workout) ===== */
+
+.fit-stepper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.fit-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.7;
+    transition: background 0.3s, opacity 0.3s;
+}
+
+.fit-step .fit-step-nr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.25);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.fit-step.active {
+    background: white;
+    color: var(--fit-primary);
+    opacity: 1;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+}
+
+.fit-step.active .fit-step-nr {
+    background: var(--fit-primary);
+    color: white;
+}
+
+.fit-step.done {
+    opacity: 0.9;
+}
+
+.fit-step.done .fit-step-nr {
+    background: var(--fit-correct);
+    color: white;
+}
+
+/* Häkchen bei erledigtem Schritt */
+.fit-step.done .fit-step-nr::before {
+    content: "✓";
+}
+
+.fit-step-verbinder {
+    width: 24px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
+}
+
+/* ===== Aufgaben-Karte ===== */
+
+.fit-karte {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    min-height: 250px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.fit-aufgabe-text {
+    font-size: 1.3rem;
+    color: #1f2937;
+    text-align: center;
+    line-height: 1.7;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fit-aufgabe-text .katex {
+    font-size: 1.3em;
+}
+
+.fit-aufgabe-text .katex-display {
+    margin: 10px 0;
+}
+
+/* ===== Theorie-Karten (Technik-Phase) ===== */
+
+.fit-theorie {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 26px 30px;
+    margin-bottom: 20px;
+    color: #1f2937;
+    line-height: 1.7;
+}
+
+.fit-theorie h2 {
+    font-size: 1.35rem;
+    color: var(--fit-primary);
+    margin-bottom: 12px;
+}
+
+.fit-theorie h3 {
+    font-size: 1.1rem;
+    color: #374151;
+    margin: 14px 0 6px;
+}
+
+.fit-theorie p {
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+/* Inline-SVG-Graphen skalieren mit */
+.fit-theorie svg {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 12px auto;
+}
+
+/* ===== Eingabe & Prüfen ===== */
+
+.fit-eingabe {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.fit-eingabe input[type="text"],
+.fit-eingabe input[type="number"] {
+    width: 100%;
+    max-width: 400px;
+    font-size: 1.2rem;
+    padding: 14px 18px;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.fit-eingabe input:focus {
+    border-color: var(--fit-primary);
+    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15);
+}
+
+.fit-eingabe input.input-correct {
+    border-color: var(--fit-correct);
+    background: #dcfce7;
+}
+
+.fit-eingabe input.input-wrong {
+    border-color: var(--fit-wrong);
+    background: #fee2e2;
+}
+
+/* ===== Buttons (große Touch-Flächen) ===== */
+
+.fit-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 12px 36px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--fit-primary), var(--fit-secondary));
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    min-height: 44px;
+}
+
+.fit-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.fit-btn:active {
+    transform: scale(0.98);
+}
+
+.fit-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Dezente Variante (auf Verlauf-Hintergrund) */
+.fit-btn-ghost {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    color: white;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    min-height: 44px;
+}
+
+.fit-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===== Multiple Choice ===== */
+
+.fit-mc {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.fit-mc-option {
+    width: 100%;
+    text-align: left;
+    padding: 14px 20px;
+    font-size: 1.05rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    color: #1f2937;
+    line-height: 1.5;
+    min-height: 44px;
+}
+
+.fit-mc-option:hover {
+    border-color: var(--fit-primary);
+    background: rgba(67, 56, 202, 0.04);
+    transform: translateX(4px);
+}
+
+.fit-mc-option.selected {
+    border-color: var(--fit-primary);
+    background: rgba(67, 56, 202, 0.08);
+}
+
+.fit-mc-option.correct {
+    border-color: var(--fit-correct);
+    background: #dcfce7;
+    color: #166534;
+}
+
+.fit-mc-option.wrong {
+    border-color: var(--fit-wrong);
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.fit-mc-option.correct,
+.fit-mc-option.wrong {
+    pointer-events: none;
+}
+
+.fit-mc-option .katex {
+    font-size: 1.05em;
+}
+
+/* ===== Zuordnung (Tipp-Auswahl, zwei Spalten) ===== */
+
+.fit-zuordnung {
+    display: flex;
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.fit-zuordnung-links,
+.fit-zuordnung-rechts {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.fit-zuordnung button {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #1f2937;
+    line-height: 1.4;
+    min-height: 44px;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.fit-zuordnung button:hover {
+    border-color: var(--fit-primary);
+}
+
+.fit-zuordnung button.selected {
+    border-color: var(--fit-primary);
+    background: rgba(67, 56, 202, 0.1);
+    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.15);
+}
+
+/* Verbundene Paare: dezent eingefärbt, Paar-Nummer via data-paar */
+.fit-zuordnung button.paired {
+    border-color: var(--fit-secondary);
+    background: rgba(124, 58, 237, 0.07);
+}
+
+.fit-zuordnung button.paired::after {
+    content: attr(data-paar);
+    position: absolute;
+    top: -8px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--fit-secondary);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Nach der Auswertung */
+.fit-zuordnung button.korrekt {
+    border-color: var(--fit-correct);
+    background: #dcfce7;
+    color: #166534;
+    pointer-events: none;
+}
+
+.fit-zuordnung button.falsch {
+    border-color: var(--fit-wrong);
+    background: #fee2e2;
+    color: #991b1b;
+    pointer-events: none;
+}
+
+.fit-zuordnung button.korrekt::after {
+    background: var(--fit-correct);
+}
+
+.fit-zuordnung button.falsch::after {
+    background: var(--fit-wrong);
+}
+
+/* ===== Stufen-Umschalter (Grund- / Fortgeschritten-Workout) ===== */
+
+.fit-stufen {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 20px;
+}
+
+.fit-stufen button {
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    cursor: pointer;
+    min-height: 44px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.fit-stufen button:first-child {
+    border-radius: 12px 0 0 12px;
+    border-right-width: 1px;
+}
+
+.fit-stufen button:last-child {
+    border-radius: 0 12px 12px 0;
+    border-left-width: 1px;
+}
+
+.fit-stufen button.active {
+    background: white;
+    color: var(--fit-primary);
+    border-color: white;
+}
+
+/* ===== Empfehlungs-Box nach Diagnose ===== */
+
+.fit-empfehlung {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #1f2937;
+}
+
+.fit-empfehlung h2 {
+    font-size: 1.35rem;
+    color: var(--fit-primary);
+    margin-bottom: 10px;
+}
+
+.fit-empfehlung p {
+    line-height: 1.6;
+    margin-bottom: 18px;
+}
+
+.fit-empfehlung-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.fit-empfehlung-buttons button {
+    flex: 1 1 260px;
+    max-width: 320px;
+    padding: 18px 20px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border: 2px solid var(--fit-primary);
+    border-radius: 14px;
+    background: white;
+    color: var(--fit-primary);
+    cursor: pointer;
+    min-height: 60px;
+    transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.fit-empfehlung-buttons button:hover {
+    transform: scale(1.02);
+}
+
+.fit-empfehlung-buttons button.empfohlen {
+    background: linear-gradient(135deg, var(--fit-primary), var(--fit-secondary));
+    color: white;
+    border-color: transparent;
+}
+
+/* ===== Feedback ===== */
+
+.fit-feedback {
+    margin-top: 20px;
+    border-radius: 16px;
+    padding: 24px;
+    animation: fitSlideUp 0.35s ease-out;
+}
+
+.fit-feedback-richtig {
+    background: #dcfce7;
+    border: 2px solid var(--fit-correct);
+}
+
+.fit-feedback-falsch {
+    background: #fee2e2;
+    border: 2px solid var(--fit-wrong);
+}
+
+.fit-feedback-icon {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.fit-feedback-richtig .fit-feedback-icon {
+    color: #166534;
+}
+
+.fit-feedback-falsch .fit-feedback-icon {
+    color: #991b1b;
+}
+
+.fit-loesungsweg {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 12px;
+    line-height: 1.7;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.fit-loesungsweg .katex {
+    font-size: 1.1em;
+}
+
+/* ===== Tipp-Box ===== */
+
+.fit-tipp-box {
+    display: none;
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    padding: 15px 18px;
+    border-radius: 0 10px 10px 0;
+    margin-top: 16px;
+    line-height: 1.6;
+    color: #92400e;
+    font-size: 0.95rem;
+    animation: fitFadeIn 0.3s ease-out;
+}
+
+.fit-tipp-box.visible {
+    display: block;
+}
+
+/* ===== Abschluss-Screen ===== */
+
+.fit-abschluss {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    padding: 40px 30px;
+    text-align: center;
+    color: #1f2937;
+    animation: fitFadeIn 0.5s ease-out;
+}
+
+.fit-abschluss .fit-abschluss-emoji {
+    font-size: 3rem;
+    margin-bottom: 12px;
+}
+
+.fit-abschluss h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    color: var(--fit-primary);
+}
+
+.fit-abschluss .fit-ergebnis {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 24px 0;
+}
+
+.fit-abschluss .fit-ergebnis-block .wert {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.fit-abschluss .fit-ergebnis-block .label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+.fit-abschluss .fit-ergebnis-block.richtig .wert {
+    color: var(--fit-correct);
+}
+
+.fit-abschluss .fit-ergebnis-block.falsch .wert {
+    color: var(--fit-wrong);
+}
+
+.fit-abschluss .fit-abschluss-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* ===== Animationen ===== */
+
+@keyframes fitSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fitFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ===== Responsiv (nur EINMAL — der Duplikat-Block der Vorlage wurde bereinigt) ===== */
+
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    header p {
+        font-size: 0.95rem;
+    }
+
+    /* Stepper kompakt: nur Nummern/Häkchen, Texte ausblenden */
+    .fit-stepper {
+        gap: 5px;
+    }
+
+    .fit-step {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    .fit-step .fit-step-text {
+        display: none;
+    }
+
+    .fit-step.active .fit-step-text {
+        display: inline;
+    }
+
+    .fit-step-verbinder {
+        width: 12px;
+    }
+
+    .fit-karte,
+    .fit-theorie,
+    .fit-empfehlung {
+        padding: 20px;
+        border-radius: 16px;
+    }
+
+    .fit-karte {
+        min-height: 200px;
+    }
+
+    .fit-aufgabe-text {
+        font-size: 1.1rem;
+    }
+
+    .fit-eingabe input[type="text"],
+    .fit-eingabe input[type="number"] {
+        font-size: 1rem;
+        padding: 12px 14px;
+        max-width: 100%;
+    }
+
+    .fit-btn {
+        width: 100%;
+        padding: 14px 24px;
+        font-size: 1rem;
+    }
+
+    .fit-mc-option {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+
+    .fit-mc-option:hover {
+        transform: none;
+    }
+
+    /* Zuordnung: Spalten nebeneinander lassen, Buttons je 50 % Breite, kleine Schrift */
+    .fit-zuordnung {
+        gap: 8px;
+    }
+
+    .fit-zuordnung button {
+        padding: 10px 8px;
+        font-size: 0.85rem;
+    }
+
+    .fit-stufen button {
+        padding: 8px 16px;
+        font-size: 0.85rem;
+    }
+
+    .fit-empfehlung-buttons button {
+        flex-basis: 100%;
+        max-width: none;
+    }
+
+    .fit-feedback {
+        padding: 18px;
+    }
+
+    .fit-abschluss {
+        padding: 28px 20px;
+    }
+
+    .fit-abschluss .fit-ergebnis {
+        gap: 18px;
+    }
+
+    .fit-abschluss .fit-ergebnis-block .wert {
+        font-size: 1.5rem;
+    }
+}
+
+/* ===== Barrierefreiheit: reduzierte Bewegung ===== */
+
+@media (prefers-reduced-motion: reduce) {
+    .fit-feedback,
+    .fit-tipp-box,
+    .fit-abschluss {
+        animation: none;
+    }
+
+    .fit-btn:hover,
+    .fit-empfehlung-buttons button:hover {
+        transform: none;
+    }
+
+    .fit-mc-option:hover {
+        transform: none;
+    }
+
+    .fit-eingabe input,
+    .fit-mc-option,
+    .fit-btn,
+    .fit-btn-ghost,
+    .fit-zuordnung button,
+    .fit-step,
+    .back-link {
+        transition: none;
+    }
+}
