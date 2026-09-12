@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Misch-Workout — FunctionGym</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="../fit.css">
+<style>
+  :root { --fit-primary: #b45309; --fit-secondary: #92400e; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const THEMA_KEY = 'fitgym-misch';
+const THEMA_CONFIG = { name: 'Misch-Workout: Typische Aufgaben' };
+
+// ── Eingangscheck ───────────────────────────────────────────
+const DIAGNOSE = [
+  { typ: 'mc',
+    frage: 'Wie prüfst du, ob der Punkt \\(P(2\\,|\\,7)\\) auf dem Graphen von \\(f\\) liegt?',
+    optionen: [
+      '\\(x = 2\\) einsetzen und prüfen, ob \\(f(2) = 7\\) herauskommt',
+      '\\(y = 7\\) einsetzen und prüfen, ob \\(f(7) = 2\\) herauskommt',
+      'Beide Koordinaten addieren und mit \\(f(9)\\) vergleichen'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Punktprobe: Immer die x-Koordinate in den Funktionsterm einsetzen. Kommt genau die y-Koordinate heraus (\\(f(2) = 7\\)), liegt \\(P\\) auf dem Graphen — sonst nicht.' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = x^2 - 3x + 1\\). Berechne \\(f(4)\\).',
+    loesung: 5,
+    loesungsweg: '\\(f(4) = 4^2 - 3 \\cdot 4 + 1 = 16 - 12 + 1 = 5\\).' },
+  { typ: 'mc',
+    frage: 'Du sollst den Schnittpunkt eines Graphen mit der x-Achse berechnen. Welcher Ansatz ist richtig?',
+    optionen: [
+      '\\(f(x) = 0\\) setzen und nach \\(x\\) auflösen',
+      '\\(x = 0\\) setzen und \\(f(0)\\) berechnen',
+      '\\(f(x) = x\\) setzen und nach \\(x\\) auflösen',
+      'Den Scheitelpunkt ablesen'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Auf der x-Achse ist die y-Koordinate null. Also muss \\(f(x) = 0\\) gelten — diese Gleichung löst du nach \\(x\\) auf. (\\(x = 0\\) einsetzen liefert dagegen den Schnittpunkt mit der <em>y</em>-Achse.)' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = x^3 - 2x + 5\\). An welchem y-Wert schneidet der Graph die y-Achse?',
+    loesung: 5,
+    loesungsweg: 'Auf der y-Achse ist \\(x = 0\\): \\(f(0) = 0^3 - 2 \\cdot 0 + 5 = 5\\). Der Graph schneidet die y-Achse also bei \\((0\\,|\\,5)\\).' }
+];
+
+// ── Technik (Theorie) ───────────────────────────────────────
+const THEORIE = [
+  { titel: 'Funktionswert & fehlende Koordinate',
+    html: `
+<p>Ein Punkt auf einem Graphen hat zwei Koordinaten — oft fehlt eine davon. Je nachdem, <em>welche</em> fehlt, rechnest du anders:</p>
+<ul>
+  <li><strong>y fehlt</strong> (z.&nbsp;B. \\(P(3\\,|\\,y)\\)): Setze \\(x\\) in den Funktionsterm ein und rechne den Funktionswert aus.</li>
+  <li><strong>x fehlt</strong> (z.&nbsp;B. \\(Q(x\\,|\\,5)\\)): Setze \\(f(x) = y\\) und löse die Gleichung nach \\(x\\) auf.</li>
+</ul>
+<p><strong>Beispiel 1 (y fehlt):</strong> \\(P(3\\,|\\,y)\\) liegt auf \\(f(x) = 2x - 1\\):</p>
+<p>$$f(3) = 2 \\cdot 3 - 1 = 5 \\quad\\Rightarrow\\quad P(3\\,|\\,5) $$</p>
+<p><strong>Beispiel 2 (x fehlt):</strong> \\(Q(x\\,|\\,3)\\) liegt auf \\(f(x) = x^2 - 2x\\). Ansatz \\(f(x) = 3\\):</p>
+<p>$$x^2 - 2x = 3 \\quad\\Rightarrow\\quad x^2 - 2x - 3 = 0 $$</p>
+<p>pq-Formel mit \\(p = -2\\), \\(q = -3\\):</p>
+<p>$$x_{1,2} = 1 \\pm \\sqrt{1 + 3} = 1 \\pm 2 \\quad\\Rightarrow\\quad x_1 = 3,\\; x_2 = -1 $$</p>
+<p>Es gibt hier also <strong>zwei</strong> passende Punkte: \\((3\\,|\\,3)\\) und \\((-1\\,|\\,3)\\).</p>` },
+  { titel: 'Punktprobe',
+    html: `
+<p>Mit der <strong>Punktprobe</strong> prüfst du, ob ein Punkt auf einem Graphen liegt: Setze die x-Koordinate in den Funktionsterm ein und vergleiche das Ergebnis mit der y-Koordinate.</p>
+<ul>
+  <li>Ergebnis = y-Koordinate → <strong>wahre Aussage</strong>, der Punkt liegt auf dem Graphen.</li>
+  <li>Ergebnis ≠ y-Koordinate → <strong>falsche Aussage</strong>, der Punkt liegt nicht darauf.</li>
+</ul>
+<p><strong>Beispiel:</strong> Liegt \\(A(9\\,|\\,5)\\) auf \\(f(x) = \\sqrt{x} + 2\\)?</p>
+<p>$$f(9) = \\sqrt{9} + 2 = 3 + 2 = 5 $$</p>
+<p>\\(5 = 5\\) ist wahr — \\(A\\) liegt auf dem Graphen. Für \\(B(4\\,|\\,5)\\) dagegen: \\(f(4) = \\sqrt{4} + 2 = 4 \\neq 5\\), also liegt \\(B\\) nicht darauf.</p>` },
+  { titel: 'Schnittpunkte mit den Achsen',
+    html: `
+<p>Die beiden Achsen-Schnittpunkte haben feste Ansätze — sie funktionieren bei <em>jedem</em> Funktionstyp gleich:</p>
+<ul>
+  <li><strong>Schnitt mit der y-Achse:</strong> Dort ist \\(x = 0\\). Berechne \\(f(0)\\) — der Schnittpunkt ist \\((0\\,|\\,f(0))\\).</li>
+  <li><strong>Schnitt mit der x-Achse (Nullstellen):</strong> Dort ist \\(y = 0\\). Setze \\(f(x) = 0\\) und löse nach \\(x\\) auf.</li>
+</ul>
+<p><strong>Beispiel y-Achse:</strong> \\(f(x) = 5 \\cdot 3^x\\):</p>
+<p>$$f(0) = 5 \\cdot 3^0 = 5 \\cdot 1 = 5 \\quad\\Rightarrow\\quad (0\\,|\\,5) $$</p>
+<p><strong>Beispiel x-Achse:</strong> \\(f(x) = x^2 - 9\\):</p>
+<p>$$x^2 - 9 = 0 \\quad\\Rightarrow\\quad x^2 = 9 \\quad\\Rightarrow\\quad x_1 = 3,\\; x_2 = -3 $$</p>
+<p><strong>Merke:</strong> „Wo schneidet der Graph die y-Achse?" → rechnen mit \\(x = 0\\). „Wo schneidet er die x-Achse?" → Gleichung \\(f(x) = 0\\) lösen.</p>` },
+  { titel: 'Anwendungsaufgaben knacken',
+    html: `
+<p>Bei Sachaufgaben steckt hinter jeder Frage eine der Techniken von oben. So gehst du vor:</p>
+<ol>
+  <li><strong>Was ist gegeben, was ist gesucht?</strong> Notiere die Funktion und was die Variablen im Sachzusammenhang bedeuten.</li>
+  <li><strong>Welche Koordinate fehlt?</strong> Ist ein x-Wert gegeben und der Funktionswert gesucht → einsetzen. Ist der Funktionswert gegeben → Gleichung \\(f(x) = \\text{Wert}\\) lösen.</li>
+  <li><strong>Randwerte interpretieren:</strong> \\(f(0)\\) ist fast immer der <strong>Startwert</strong> (Anfangshöhe, Grundgebühr, Anfangsbestand). Nullstellen bedeuten „der Wert ist null" (Aufprall, aufgebraucht).</li>
+</ol>
+<p><strong>Kurzes Beispiel:</strong> Eine Wasserfontäne folgt der Flugbahn \\(h(x) = -0{,}5x^2 + 2x + 1\\) (\\(x\\) = Entfernung in m, \\(h\\) = Höhe in m).</p>
+<ul>
+  <li>„Aus welcher Höhe startet der Strahl?" → \\(h(0) = 1\\), also 1&nbsp;m.</li>
+  <li>„Wie hoch ist der Strahl 2&nbsp;m von der Düse entfernt?" → \\(h(2) = -2 + 4 + 1 = 3\\), also 3&nbsp;m.</li>
+</ul>
+<p>Am Ende immer die <strong>Antwort im Sachzusammenhang</strong> formulieren — mit Einheit!</p>` }
+];
+
+// ── Workout ─────────────────────────────────────────────────
+const AUFGABEN = [
+  // Stufe 1
+  { id: 1, stufe: 1, typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = 2x^2 + 3x\\). Berechne \\(f(-1)\\).',
+    loesung: -1,
+    tipp: 'Setze \\(x = -1\\) ein. Beachte: \\((-1)^2 = +1\\), aber \\(3 \\cdot (-1) = -3\\).',
+    loesungsweg: '\\(f(-1) = 2 \\cdot (-1)^2 + 3 \\cdot (-1) = 2 \\cdot 1 - 3 = 2 - 3 = -1\\).' },
+  { id: 2, stufe: 1, typ: 'numerisch',
+    frage: 'Der Punkt \\(P(4\\,|\\,y)\\) liegt auf dem Graphen von \\(f(x) = \\sqrt{x} + 2\\). Berechne die fehlende y-Koordinate.',
+    loesung: 4,
+    tipp: 'Die y-Koordinate fehlt, die x-Koordinate ist bekannt: Setze \\(x = 4\\) in den Funktionsterm ein.',
+    loesungsweg: '\\(y = f(4) = \\sqrt{4} + 2 = 2 + 2 = 4\\). Also \\(P(4\\,|\\,4)\\).' },
+  { id: 3, stufe: 1, typ: 'mc',
+    frage: 'Liegt der Punkt \\(Q(3\\,|\\,10)\\) auf dem Graphen von \\(f(x) = x^2 + 1\\)?',
+    optionen: [
+      'Ja, denn \\(f(3) = 3^2 + 1 = 10\\)',
+      'Nein, denn \\(f(3) = 3^2 + 1 = 9\\)',
+      'Ja, denn \\(f(10) = 10^2 + 1 = 101\\)',
+      'Nein, denn \\(3 + 10 = 13 \\neq 1\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Punktprobe: Setze die x-Koordinate 3 ein und vergleiche mit der y-Koordinate 10.',
+    loesungsweg: 'Punktprobe mit \\(x = 3\\): \\(f(3) = 3^2 + 1 = 9 + 1 = 10\\). Das ist genau die y-Koordinate von \\(Q\\), also liegt \\(Q\\) auf dem Graphen.' },
+  { id: 4, stufe: 1, typ: 'numerisch',
+    frage: 'An welchem y-Wert schneidet der Graph von \\(f(x) = 3 \\cdot 2^x\\) die y-Achse?',
+    loesung: 3,
+    tipp: 'Auf der y-Achse ist \\(x = 0\\). Denk daran: Jede Zahl hoch null ergibt 1.',
+    loesungsweg: '\\(f(0) = 3 \\cdot 2^0 = 3 \\cdot 1 = 3\\). Der Graph schneidet die y-Achse bei \\((0\\,|\\,3)\\).' },
+  { id: 5, stufe: 1, typ: 'numerisch',
+    frage: 'Berechne die positive Nullstelle von \\(f(x) = x^2 - 16\\).',
+    loesung: 4,
+    tipp: 'Setze \\(f(x) = 0\\) und löse \\(x^2 = 16\\). Es gibt zwei Lösungen — gefragt ist die positive.',
+    loesungsweg: '\\(x^2 - 16 = 0 \\;\\Rightarrow\\; x^2 = 16 \\;\\Rightarrow\\; x_1 = 4,\\; x_2 = -4\\). Die positive Nullstelle ist \\(x = 4\\).' },
+  { id: 6, stufe: 1, typ: 'zuordnung',
+    frage: 'Ordne jedem Rechenansatz das passende Ziel zu.',
+    paare: [
+      { links: '\\(f(0)\\) berechnen', rechts: 'Schnittpunkt mit der y-Achse' },
+      { links: '\\(f(x) = 0\\) lösen', rechts: 'Nullstellen bestimmen' },
+      { links: '\\(f(5)\\) berechnen', rechts: 'Funktionswert an der Stelle 5' },
+      { links: '\\(f(x) = 3\\) lösen', rechts: 'Stellen mit Funktionswert 3 finden' }
+    ],
+    tipp: 'Steht die Zahl <em>in der Klammer</em>, ist es ein x-Wert zum Einsetzen. Steht sie <em>hinter dem Gleichheitszeichen</em>, ist es ein y-Wert — dann musst du eine Gleichung lösen.',
+    loesungsweg: '\\(f(0)\\): \\(x = 0\\) einsetzen → y-Achsenabschnitt. \\(f(x) = 0\\): y-Wert null → Nullstellen. \\(f(5)\\): \\(x = 5\\) einsetzen → Funktionswert an der Stelle 5. \\(f(x) = 3\\): gesucht sind alle \\(x\\) mit y-Wert 3.' },
+  // Stufe 2 — Anwendungskontext Basketballwurf
+  { id: 7, stufe: 2, typ: 'numerisch',
+    frage: 'Ein Basketball fliegt auf der Bahn \\(h(x) = -0{,}2x^2 + 1{,}2x + 2\\) (\\(x\\) = horizontale Entfernung in m, \\(h\\) = Höhe in m). Aus welcher Höhe (in m) wird der Ball abgeworfen?',
+    loesung: 2,
+    tipp: 'Beim Abwurf ist die horizontale Entfernung noch null: Berechne \\(h(0)\\).',
+    loesungsweg: 'Abwurf bedeutet \\(x = 0\\): \\(h(0) = -0{,}2 \\cdot 0^2 + 1{,}2 \\cdot 0 + 2 = 2\\). Der Ball wird aus 2&nbsp;m Höhe abgeworfen.' },
+  { id: 8, stufe: 2, typ: 'numerisch',
+    frage: 'Basketballwurf mit \\(h(x) = -0{,}2x^2 + 1{,}2x + 2\\) (\\(x\\) = Entfernung in m, \\(h\\) = Höhe in m). Wie hoch (in m) ist der Ball 2 m nach dem Abwurf?',
+    loesung: 3.6,
+    toleranz: 0.01,
+    tipp: 'Die Entfernung ist gegeben, die Höhe gesucht: Setze \\(x = 2\\) in \\(h(x)\\) ein.',
+    loesungsweg: '\\(h(2) = -0{,}2 \\cdot 2^2 + 1{,}2 \\cdot 2 + 2 = -0{,}8 + 2{,}4 + 2 = 3{,}6\\). Der Ball ist dort 3,6&nbsp;m hoch.' },
+  { id: 9, stufe: 2, typ: 'numerisch',
+    frage: 'Basketballwurf mit \\(h(x) = -0{,}2x^2 + 1{,}2x + 2\\) (\\(x\\) = Entfernung in m, \\(h\\) = Höhe in m). Welche maximale Höhe (in m) erreicht der Ball?',
+    loesung: 3.8,
+    toleranz: 0.01,
+    tipp: 'Die maximale Höhe liegt im Scheitelpunkt. Seine x-Koordinate ist \\(x_S = -\\frac{b}{2a}\\) — setze sie danach in \\(h(x)\\) ein.',
+    loesungsweg: 'Scheitelstelle: \\(x_S = -\\frac{1{,}2}{2 \\cdot (-0{,}2)} = -\\frac{1{,}2}{-0{,}4} = 3\\). Höhe dort: \\(h(3) = -0{,}2 \\cdot 9 + 1{,}2 \\cdot 3 + 2 = -1{,}8 + 3{,}6 + 2 = 3{,}8\\). Die maximale Höhe beträgt 3,8&nbsp;m.' },
+  { id: 10, stufe: 2, typ: 'numerisch',
+    frage: 'Basketballwurf mit \\(h(x) = -0{,}2x^2 + 1{,}2x + 2\\) (\\(x\\) = Entfernung in m, \\(h\\) = Höhe in m). Bei welcher Entfernung \\(x > 0\\) ist der Ball wieder genau auf 2 m Höhe?',
+    loesung: 6,
+    tipp: 'Die Höhe 2 ist gegeben: Ansatz \\(h(x) = 2\\). Nach dem Umformen kannst du \\(x\\) ausklammern.',
+    loesungsweg: 'Ansatz \\(h(x) = 2\\): \\(-0{,}2x^2 + 1{,}2x + 2 = 2 \\;\\Rightarrow\\; -0{,}2x^2 + 1{,}2x = 0 \\;\\Rightarrow\\; x \\cdot (-0{,}2x + 1{,}2) = 0\\). Also \\(x = 0\\) (Abwurf) oder \\(-0{,}2x + 1{,}2 = 0 \\Rightarrow x = 6\\). Nach 6&nbsp;m ist der Ball wieder auf 2&nbsp;m Höhe.' },
+  { id: 11, stufe: 2, typ: 'mc',
+    frage: 'Basketballwurf mit \\(h(x) = -0{,}2x^2 + 1{,}2x + 2\\) (\\(x\\) = Entfernung in m, \\(h\\) = Höhe in m). Was bedeutet \\(h(0)\\) im Sachzusammenhang?',
+    optionen: [
+      'Die Abwurfhöhe des Balls',
+      'Die maximale Höhe des Balls',
+      'Die Wurfweite des Balls',
+      'Den Zeitpunkt des Abwurfs'
+    ],
+    korrekt: 0,
+    tipp: '\\(x\\) ist die horizontale Entfernung. Was bedeutet es also, wenn \\(x = 0\\) ist?',
+    loesungsweg: '\\(x = 0\\) heißt: Der Ball hat sich noch keinen Meter horizontal bewegt — das ist der Moment des Abwurfs. \\(h(0) = 2\\) ist also die Abwurfhöhe. (Zeit kommt in dieser Funktion gar nicht vor, \\(x\\) ist eine Strecke.)' }
+];
+</script>
+<script src="../fit-engine.js"></script>
+</body>
+</html>
