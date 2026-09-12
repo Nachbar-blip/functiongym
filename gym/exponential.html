@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exponentialfunktionen — FunctionGym</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="../fit.css">
+<style>
+  :root { --fit-primary: #dc2626; --fit-secondary: #db2777; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const THEMA_KEY = 'fitgym-exponential';
+const THEMA_CONFIG = { name: 'Exponentialfunktionen' };
+
+// ── Eingangscheck ───────────────────────────────────────────
+const DIAGNOSE = [
+  { typ: 'mc',
+    frage: 'Bestand A wächst pro Jahr um den <strong>Faktor 1,2</strong>, Bestand B wächst pro Jahr um <strong>200 Stück</strong>. Welche Aussage stimmt?',
+    optionen: [
+      'A wächst exponentiell, B wächst linear',
+      'A wächst linear, B wächst exponentiell',
+      'Beide wachsen exponentiell',
+      'Beide wachsen linear'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Kommt pro Zeitschritt immer <em>derselbe Faktor</em> dazu (mal 1,2), ist das Wachstum <strong>exponentiell</strong>. Kommt immer <em>dieselbe Zahl</em> dazu (plus 200), ist es <strong>linear</strong>. Also: A exponentiell, B linear.' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = 2 \\cdot 3^x\\). Berechne \\(f(3)\\).',
+    loesung: 54,
+    loesungsweg: '\\(f(3) = 2 \\cdot 3^3 = 2 \\cdot 27 = 54\\). Wichtig: Erst die Potenz, dann mal 2 — nicht \\((2 \\cdot 3)^3\\) rechnen!' },
+  { typ: 'mc',
+    frage: 'Ein Bestand wächst jedes Jahr um <strong>5 %</strong>. Wie lautet der Wachstumsfaktor \\(b\\)?',
+    optionen: [
+      '\\(b = 1{,}05\\)',
+      '\\(b = 0{,}95\\)',
+      '\\(b = 1{,}5\\)',
+      '\\(b = 5\\)'
+    ],
+    korrekt: 0,
+    loesungsweg: 'Bei Wachstum um \\(p\\,\\%\\) gilt \\(b = 1 + \\frac{p}{100}\\). Hier: \\(b = 1 + \\frac{5}{100} = 1{,}05\\). (\\(0{,}95\\) wäre eine <em>Abnahme</em> um 5 %.)' },
+  { typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = 7 \\cdot 0{,}8^x\\). Berechne \\(f(0)\\).',
+    loesung: 7,
+    loesungsweg: '\\(f(0) = 7 \\cdot 0{,}8^0 = 7 \\cdot 1 = 7\\). Jede Zahl hoch 0 ergibt 1 — deshalb ist \\(f(0)\\) immer der Anfangsbestand \\(a\\).' }
+];
+
+// ── Technik (Theorie) ───────────────────────────────────────
+const THEORIE = [
+  { titel: 'Exponentielles Wachstum',
+    html: `
+<p>Wächst (oder schrumpft) ein Bestand in jedem Zeitschritt um den <strong>gleichen Faktor</strong>, spricht man von <strong>exponentiellem Wachstum</strong>:</p>
+<p>$$B(t) = a \\cdot b^t $$</p>
+<ul>
+  <li>\\(a\\) ist der <strong>Anfangsbestand</strong>: \\(B(0) = a \\cdot b^0 = a\\).</li>
+  <li>\\(b\\) ist der <strong>Wachstumsfaktor</strong>: Er sagt, womit pro Zeitschritt multipliziert wird.</li>
+  <li>\\(b > 1\\): <strong>Wachstum</strong> — der Bestand nimmt zu.</li>
+  <li>\\(0 < b < 1\\): <strong>Abnahme</strong> (exponentieller Zerfall) — der Bestand schrumpft.</li>
+</ul>
+<p>Aus <strong>Prozentangaben</strong> bestimmst du \\(b\\) so:</p>
+<ul>
+  <li>Zunahme um \\(p\\,\\%\\) pro Schritt: \\(b = 1 + \\frac{p}{100}\\) &nbsp;(z.&nbsp;B. +8 % → \\(b = 1{,}08\\))</li>
+  <li>Abnahme um \\(p\\,\\%\\) pro Schritt: \\(b = 1 - \\frac{p}{100}\\) &nbsp;(z.&nbsp;B. −8 % → \\(b = 0{,}92\\))</li>
+</ul>
+<p><strong>Zahlenbeispiel:</strong> Auf einem Sparkonto liegen 300 €, jedes Jahr kommen 4 % Zinsen dazu. Dann ist \\(B(t) = 300 \\cdot 1{,}04^t\\), und nach 2 Jahren: \\(B(2) = 300 \\cdot 1{,}04^2 = 324{,}48\\) €.</p>
+<svg viewBox="0 0 320 230" role="img" aria-label="Wachsende und fallende Exponentialkurve im Koordinatensystem, beide durch den Punkt (0|1)" style="max-width:100%;height:auto;display:block;margin:0.5em auto;">
+  <!-- Gitter -->
+  <g stroke="#d0d7e2" stroke-width="1">
+    <line x1="80" y1="10" x2="80" y2="210"/><line x1="120" y1="10" x2="120" y2="210"/>
+    <line x1="160" y1="10" x2="160" y2="210"/><line x1="200" y1="10" x2="200" y2="210"/>
+    <line x1="240" y1="10" x2="240" y2="210"/><line x1="280" y1="10" x2="280" y2="210"/>
+    <line x1="10" y1="140" x2="310" y2="140"/><line x1="10" y1="100" x2="310" y2="100"/>
+    <line x1="10" y1="60" x2="310" y2="60"/><line x1="10" y1="20" x2="310" y2="20"/>
+  </g>
+  <!-- Achsen: Ursprung bei (160|180), 1 Einheit = 40px -->
+  <g stroke="#333" stroke-width="1.5">
+    <line x1="10" y1="180" x2="310" y2="180"/>
+    <line x1="160" y1="215" x2="160" y2="12"/>
+  </g>
+  <polygon points="310,180 300,176 300,184" fill="#333"/>
+  <polygon points="160,12 156,22 164,22" fill="#333"/>
+  <text x="300" y="198" font-size="12" fill="#333">x</text>
+  <text x="144" y="20" font-size="12" fill="#333">y</text>
+  <text x="150" y="196" font-size="11" fill="#333">0</text>
+  <text x="196" y="196" font-size="11" fill="#333">1</text>
+  <text x="146" y="144" font-size="11" fill="#333">1</text>
+  <!-- Wachsende Kurve, 2^x-artig: Punkte (-3|0.125)...(2|4) -->
+  <path d="M 40,175 C 100,170 130,162 160,140 C 190,118 215,60 240,20"
+        fill="none" stroke="var(--fit-primary)" stroke-width="2.5"/>
+  <text x="244" y="34" font-size="12" fill="var(--fit-primary)">b &gt; 1</text>
+  <!-- Fallende Kurve, 0,5^x-artig: gespiegelt -->
+  <path d="M 280,175 C 220,170 190,162 160,140 C 130,118 105,60 80,20"
+        fill="none" stroke="var(--fit-secondary)" stroke-width="2.5"/>
+  <text x="44" y="34" font-size="12" fill="var(--fit-secondary)">0 &lt; b &lt; 1</text>
+  <!-- Gemeinsamer Punkt (0|1) -->
+  <circle cx="160" cy="140" r="4" fill="#333"/>
+  <text x="168" y="132" font-size="11" fill="#333">(0|1)</text>
+</svg>
+<p>Im Bild: Beide Kurven gehen durch \\((0\\,|\\,1)\\) — die rote wächst (\\(b > 1\\)), die pinke fällt (\\(0 < b < 1\\)).</p>` },
+  { titel: 'Die Exponentialfunktion f(x) = bˣ',
+    html: `
+<p>Die Grundform der <strong>Exponentialfunktion</strong> ist</p>
+<p>$$f(x) = b^x \\qquad \\text{mit } b > 0,\\; b \\neq 1 $$</p>
+<p>Hier steht die Variable \\(x\\) <em>im Exponenten</em> — das unterscheidet sie von Potenzfunktionen wie \\(x^2\\). Ihre wichtigsten Eigenschaften:</p>
+<ul>
+  <li><strong>Definitionsbereich:</strong> \\(D = \\mathbb{R}\\) — du darfst jede Zahl einsetzen.</li>
+  <li><strong>Wertebereich:</strong> \\(W = \\left]0\\,;\\,\\infty\\right[\\) — die Funktionswerte sind immer positiv, nie null.</li>
+  <li>Der Graph geht immer durch \\((0\\,|\\,1)\\), denn \\(b^0 = 1\\), und durch \\((1\\,|\\,b)\\), denn \\(b^1 = b\\).</li>
+  <li>Die <strong>x-Achse ist Asymptote</strong>: Der Graph kommt ihr beliebig nahe, berührt sie aber nie.</li>
+  <li>Die Funktion ist <strong>streng monoton</strong>: steigend für \\(b > 1\\), fallend für \\(0 < b < 1\\).</li>
+</ul>
+<p><strong>Beispiel:</strong> \\(f(x) = 3^x\\) geht durch \\((0\\,|\\,1)\\) und \\((1\\,|\\,3)\\); für negative \\(x\\) wird sie klein, aber nie null: \\(f(-2) = 3^{-2} = \\frac{1}{9}\\).</p>` },
+  { titel: 'Verschieben, Strecken, Spiegeln',
+    html: `
+<p>Aus \\(b^x\\) entstehen durch Transformationen alle Funktionen der Form</p>
+<p>$$f(x) = c \\cdot b^{x-d} + e $$</p>
+<ul>
+  <li>\\(c\\) <strong>streckt</strong> den Graphen in y-Richtung; bei \\(c < 0\\) wird er zusätzlich an der <strong>x-Achse gespiegelt</strong>.<br>
+      <em>Mini-Beispiel:</em> \\(f(x) = -2^x\\) ist das Spiegelbild von \\(2^x\\) — alle Werte werden negativ.</li>
+  <li>\\(d\\) <strong>verschiebt nach rechts</strong>. Achtung Konvention: Im Term steht \\(x - d\\), und ein <em>Minus</em> im Exponenten bedeutet Verschiebung nach <em>rechts</em>. <br>
+      <em>Mini-Beispiel:</em> \\(f(x) = 2^{x-3}\\) ist \\(2^x\\), um 3 nach rechts verschoben.</li>
+  <li>\\(e\\) <strong>verschiebt nach oben</strong> — und nimmt dabei die <strong>Asymptote mit</strong>: Sie liegt dann nicht mehr auf der x-Achse, sondern bei \\(y = e\\).<br>
+      <em>Mini-Beispiel:</em> \\(f(x) = 2^x + 5\\) hat die Asymptote \\(y = 5\\) und geht durch \\((0\\,|\\,6)\\).</li>
+</ul>
+<p><strong>Merke:</strong> Die Lage der Asymptote liest du direkt am \\(e\\) ab — \\(c\\) und \\(d\\) ändern sie nicht.</p>` },
+  { titel: 'Exponentialgleichungen und Logarithmus',
+    html: `
+<p>Eine Gleichung, bei der \\(x\\) im Exponenten steht, heißt <strong>Exponentialgleichung</strong>. Manche kannst du durch <strong>Probieren</strong> lösen:</p>
+<p>$$3^x = 81 \\;\\Rightarrow\\; x = 4, \\text{ denn } 3^4 = 3 \\cdot 3 \\cdot 3 \\cdot 3 = 81 $$</p>
+<p>Wenn Probieren nicht klappt, hilft der <strong>Logarithmus</strong> — er beantwortet die Frage „\\(b\\) hoch <em>was</em> ergibt \\(a\\)?":</p>
+<p>$$b^x = a \\;\\Longleftrightarrow\\; x = \\log_b(a) $$</p>
+<p><strong>Taschenrechner-Tipp:</strong> Hat dein Rechner keine \\(\\log_b\\)-Taste, rechne \\(x = \\dfrac{\\log(a)}{\\log(b)}\\).</p>
+<p><strong>Durchgerechnetes Beispiel:</strong> \\(5 \\cdot 2^x = 80\\)</p>
+<ol>
+  <li>Beide Seiten durch 5 teilen: \\(2^x = 16\\)</li>
+  <li>Lösen (Probieren oder Logarithmus): \\(2^4 = 16\\), also \\(x = 4\\). Kontrolle: \\(x = \\log_2(16) = \\frac{\\log(16)}{\\log(2)} = 4\\). Passt.</li>
+</ol>
+<p><strong>Ausblick:</strong> Genau so berechnet man die <strong>Verdopplungszeit</strong> (wann ist \\(b^t = 2\\)?) bei Wachstum und die <strong>Halbwertszeit</strong> (wann ist \\(b^t = 0{,}5\\)?) bei Zerfall — wichtig z.&nbsp;B. bei Zinsen oder Radioaktivität.</p>` }
+];
+
+// ── Workout ─────────────────────────────────────────────────
+const AUFGABEN = [
+  // Stufe 1
+  { id: 1, stufe: 1, typ: 'zuordnung',
+    frage: 'Ordne jeder Situation die passende Wachstumsart zu.',
+    paare: [
+      { links: 'Ein Streaming-Dienst gewinnt jeden Monat 300 neue Abonnenten dazu', rechts: 'linear wachsend' },
+      { links: 'Der Wasserstand eines Pools sinkt beim Ablassen um 40 Liter pro Minute', rechts: 'linear fallend' },
+      { links: 'Eine Bakterienkultur verdoppelt sich jede Stunde', rechts: 'exponentiell wachsend' },
+      { links: 'Die Akkuladung eines Sensors sinkt pro Stunde auf das 0,9-Fache', rechts: 'exponentiell fallend' }
+    ],
+    tipp: 'Faktor („verdoppelt", „auf das 0,9-Fache") = exponentiell. Fester Summand („300 dazu", „um 40 Liter") = linear. Dann noch entscheiden: wird es mehr oder weniger?',
+    loesungsweg: '+300 pro Monat (fester Summand, nimmt zu): linear wachsend. −40 Liter pro Minute (fester Summand, nimmt ab): linear fallend. Verdoppeln = Faktor 2 > 1: exponentiell wachsend. Faktor 0,9 < 1: exponentiell fallend.' },
+  { id: 2, stufe: 1, typ: 'numerisch',
+    frage: 'Ein Bestand wächst jedes Jahr um <strong>12 %</strong>. Gib den Wachstumsfaktor \\(b\\) an.',
+    loesung: 1.12,
+    toleranz: 0,
+    tipp: 'Wachstum um \\(p\\,\\%\\): \\(b = 1 + \\frac{p}{100}\\).',
+    loesungsweg: '\\(b = 1 + \\frac{12}{100} = 1{,}12\\). Der neue Bestand ist jedes Jahr das 1,12-Fache des alten.' },
+  { id: 3, stufe: 1, typ: 'numerisch',
+    frage: 'Gegeben ist \\(f(x) = 5 \\cdot 2^x\\). Berechne \\(f(2)\\).',
+    loesung: 20,
+    tipp: 'Erst die Potenz \\(2^2\\) berechnen, dann mit 5 multiplizieren.',
+    loesungsweg: '\\(f(2) = 5 \\cdot 2^2 = 5 \\cdot 4 = 20\\). Nicht \\((5 \\cdot 2)^2 = 100\\) rechnen — die Potenz gilt nur für die 2!' },
+  { id: 4, stufe: 1, typ: 'mc',
+    frage: 'Ein Bestand startet bei 400 und nimmt jährlich um <strong>3 %</strong> ab. Welche Funktionsgleichung passt?',
+    optionen: [
+      '\\(B(t) = 400 \\cdot 0{,}97^t\\)',
+      '\\(B(t) = 400 \\cdot 1{,}03^t\\)',
+      '\\(B(t) = 400 \\cdot 0{,}3^t\\)',
+      '\\(B(t) = 400 - 0{,}03t\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Abnahme um \\(p\\,\\%\\): \\(b = 1 - \\frac{p}{100}\\). Und: Exponentiell heißt „mal \\(b^t\\)", nicht „minus".',
+    loesungsweg: 'Abnahme um 3 %: \\(b = 1 - 0{,}03 = 0{,}97\\). Mit Anfangsbestand \\(a = 400\\): \\(B(t) = 400 \\cdot 0{,}97^t\\). \\(1{,}03\\) wäre Wachstum, \\(0{,}3\\) hieße Abnahme um 70 %, und \\(400 - 0{,}03t\\) ist linear.' },
+  { id: 5, stufe: 1, typ: 'numerisch',
+    frage: 'Löse die Gleichung \\(2^x = 32\\).',
+    loesung: 5,
+    tipp: 'Probiere: \\(2^1 = 2\\), \\(2^2 = 4\\), \\(2^3 = 8\\), … Wie oft musst du verdoppeln?',
+    loesungsweg: '\\(2^5 = 2 \\cdot 2 \\cdot 2 \\cdot 2 \\cdot 2 = 32\\), also \\(x = 5\\). (Mit Logarithmus: \\(x = \\log_2(32) = 5\\).)' },
+  { id: 6, stufe: 1, typ: 'mc',
+    frage: 'Durch welchen Punkt geht <strong>jede</strong> Funktion der Form \\(f(x) = b^x\\)?',
+    optionen: [
+      '\\((0\\,|\\,1)\\)',
+      '\\((1\\,|\\,0)\\)',
+      '\\((0\\,|\\,0)\\)',
+      '\\((1\\,|\\,1)\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Setze \\(x = 0\\) ein: Was ergibt \\(b^0\\) — für jedes \\(b\\)?',
+    loesungsweg: '\\(f(0) = b^0 = 1\\) für jede Basis \\(b\\). Also gehen alle diese Graphen durch \\((0\\,|\\,1)\\). Durch \\((1\\,|\\,1)\\) ginge der Graph nur für \\(b = 1\\), und \\((0\\,|\\,0)\\) sowie \\((1\\,|\\,0)\\) sind unmöglich, weil \\(b^x\\) nie null wird.' },
+  // Stufe 2
+  { id: 7, stufe: 2, typ: 'numerisch',
+    frage: 'Löse die Gleichung \\(4 \\cdot 3^x = 108\\).',
+    loesung: 3,
+    tipp: 'Teile zuerst beide Seiten durch 4 — dann steht die Potenz allein.',
+    loesungsweg: '\\(4 \\cdot 3^x = 108 \\;\\Rightarrow\\; 3^x = 27 \\;\\Rightarrow\\; x = 3\\), denn \\(3^3 = 27\\). Kontrolle: \\(4 \\cdot 27 = 108\\). Passt.' },
+  { id: 8, stufe: 2, typ: 'numerisch',
+    frage: 'Löse \\(6^x = 2\\). Runde auf 2 Dezimalen.',
+    loesung: 0.39,
+    toleranz: 0.01,
+    tipp: 'Probieren hilft hier nicht — nutze den Logarithmus: \\(x = \\frac{\\log(a)}{\\log(b)}\\).',
+    loesungsweg: '\\(6^x = 2 \\;\\Rightarrow\\; x = \\log_6(2) = \\frac{\\log(2)}{\\log(6)} \\approx \\frac{0{,}3010}{0{,}7782} \\approx 0{,}39\\). Plausibel: \\(x\\) muss zwischen 0 und 1 liegen, denn \\(6^0 = 1 < 2 < 6 = 6^1\\).' },
+  { id: 9, stufe: 2, typ: 'mc',
+    frage: 'Der Graph von \\(y = 2^x\\) wird an der x-Achse gespiegelt und dann um 3 nach oben verschoben. Welche Gleichung hat der neue Graph?',
+    optionen: [
+      '\\(y = -2^x + 3\\)',
+      '\\(y = 2^{-x} + 3\\)',
+      '\\(y = -2^{x+3}\\)',
+      '\\(y = 2^x - 3\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Spiegeln an der x-Achse: Minus <em>vor</em> die ganze Funktion. Nach oben verschieben: \\(+3\\) hinten anhängen.',
+    loesungsweg: 'Spiegeln an der x-Achse macht aus \\(2^x\\) den Term \\(-2^x\\). Danach 3 nach oben: \\(y = -2^x + 3\\). Die Asymptote wandert mit: Sie liegt jetzt bei \\(y = 3\\), und der Graph nähert sich ihr von unten. (\\(2^{-x}\\) wäre Spiegelung an der <em>y</em>-Achse.)' },
+  { id: 10, stufe: 2, typ: 'numerisch',
+    frage: 'Ein Medikament wird mit 80 mg Wirkstoff verabreicht. Pro Stunde baut der Körper 10 % der vorhandenen Menge ab. Wie viel mg sind nach 3 Stunden noch vorhanden? Runde auf 2 Dezimalen.',
+    loesung: 58.32,
+    toleranz: 0.05,
+    tipp: 'Abnahme um 10 % pro Stunde heißt Faktor \\(0{,}9\\). Stelle \\(B(t) = a \\cdot b^t\\) auf und setze \\(t = 3\\) ein.',
+    loesungsweg: 'Abnahme um 10 %: \\(b = 1 - 0{,}1 = 0{,}9\\). Also \\(B(t) = 80 \\cdot 0{,}9^t\\) und \\(B(3) = 80 \\cdot 0{,}9^3 = 80 \\cdot 0{,}729 = 58{,}32\\) mg. Achtung: Nicht einfach \\(3 \\cdot 10\\,\\% = 30\\,\\%\\) abziehen (das gäbe 56 mg) — die Prozente beziehen sich jede Stunde auf den <em>aktuellen</em> Bestand.' },
+  { id: 11, stufe: 2, typ: 'numerisch',
+    frage: 'Eine Bakterienkultur startet mit 50 Bakterien und verdreifacht sich jeden Tag. Nach wie vielen Tagen sind es erstmals mindestens 1350 Bakterien?',
+    loesung: 3,
+    tipp: 'Stelle \\(B(t) = 50 \\cdot 3^t\\) auf und löse \\(50 \\cdot 3^t = 1350\\) — teile zuerst durch 50.',
+    loesungsweg: '\\(B(t) = 50 \\cdot 3^t\\). Ansatz: \\(50 \\cdot 3^t = 1350 \\;\\Rightarrow\\; 3^t = 27 \\;\\Rightarrow\\; t = 3\\). Kontrolle: \\(B(2) = 450 < 1350\\) und \\(B(3) = 1350 \\geq 1350\\) — nach 3 Tagen ist die Marke erstmals erreicht.' }
+];
+</script>
+<script src="../fit-engine.js"></script>
+</body>
+</html>
