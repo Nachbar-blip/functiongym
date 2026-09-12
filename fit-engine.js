@@ -376,6 +376,41 @@
     bindAufgabeEvents();
   }
 
+  // Leichtgewichtige Fehlertyp-Reflexion (Didaktik-Pattern 3):
+  // reine Selbsteinschätzung im Abschluss-Screen, keine Persistenz.
+  const REFLEXION_TIPPS = {
+    rechenfehler: 'Schreib Zwischenschritte auf — die meisten Rechenfehler passieren im Kopf.',
+    ansatz: 'Schau nochmal ins Technik-Training — dort steht der Ansatz für jeden Aufgabentyp.',
+    details: 'Lies die Aufgabe vor dem Prüfen nochmal: Vorzeichen, Einheiten, was genau gefragt ist.',
+    tempo: 'Tempo raus — lieber eine Aufgabe weniger, dafür konzentriert.'
+  };
+
+  function buildReflexion(s) {
+    if (s.gesamt - s.richtig < 2) return '';
+    return `<div class="fit-reflexion" id="reflexion">
+      <p class="fit-reflexion-frage">Woran lag's am ehesten?</p>
+      <div class="fit-reflexion-chips">
+        <button data-typ="rechenfehler">Rechenfehler</button>
+        <button data-typ="ansatz">Ansatz nicht gewusst</button>
+        <button data-typ="details">Vorzeichen / Details</button>
+        <button data-typ="tempo">Zu schnell geklickt</button>
+      </div>
+      <p class="fit-reflexion-tipp" id="reflexionTipp"></p>
+    </div>`;
+  }
+
+  function bindReflexion() {
+    const box = document.getElementById('reflexion');
+    if (!box) return;
+    box.querySelectorAll('.fit-reflexion-chips button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        box.querySelectorAll('.fit-reflexion-chips button').forEach(b =>
+          b.classList.toggle('selected', b === btn));
+        document.getElementById('reflexionTipp').textContent = REFLEXION_TIPPS[btn.dataset.typ];
+      });
+    });
+  }
+
   function renderAbschluss(tasks) {
     const s = sessionStats[state.stufe];
     const ergebnis = s.gesamt > 0
@@ -389,6 +424,7 @@
       <div class="fit-abschluss-emoji">&#127942;</div>
       <h2>${STUFEN_NAMEN[state.stufe]} geschafft!</h2>
       ${ergebnis}
+      ${buildReflexion(s)}
       <div class="fit-abschluss-buttons">
         <button class="fit-btn" id="btnNochmal">Nochmal</button>
         <button class="fit-btn" id="btnAndereStufe">Andere Stufe</button>
@@ -396,6 +432,7 @@
       </div>
     </div>`);
     bindStufenSwitcher();
+    bindReflexion();
     document.getElementById('btnNochmal').addEventListener('click', () => {
       const ids = tasks.map(a => a.id);
       state.answered = state.answered.filter(id => !ids.includes(id));

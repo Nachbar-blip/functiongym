@@ -2,7 +2,7 @@
 
 from helpers import (
     load_gym, datei_inhalt, setup_console_error_capture, kritische_fehler,
-    beantworte_aktuelle_aufgabe,
+    beantworte_aktuelle_aufgabe, beantworte_aktuelle_aufgabe_falsch,
 )
 
 
@@ -130,3 +130,26 @@ class TestGymInteraktiv:
         s = page.evaluate("fitState()")
         assert s["totalCorrect"] == anzahl, \
             f"{gym_file}: {s['totalCorrect']}/{anzahl} richtig im Workout"
+        # Alles richtig -> keine Fehlertyp-Reflexion
+        assert page.locator(".fit-reflexion").count() == 0, \
+            f"{gym_file}: Reflexion trotz fehlerfreier Sitzung"
+
+    def test_fehlertyp_reflexion(self, page, gym_file):
+        """>= 2 falsche Antworten -> Reflexions-Chips im Abschluss-Screen."""
+        load_gym(page, gym_file)
+        page.click(".fit-step[data-phase='workout']")
+        page.wait_for_selector(".fit-stufen", timeout=5000)
+        anzahl = page.evaluate("AUFGABEN.filter(a => a.stufe === 1).length")
+        for i in range(anzahl):
+            if i < 2:
+                beantworte_aktuelle_aufgabe_falsch(page)
+            else:
+                beantworte_aktuelle_aufgabe(page)
+        page.wait_for_selector(".fit-abschluss .fit-reflexion", timeout=5000)
+        # Chip antippen -> passender Hinweis erscheint, Chip markiert
+        page.click(".fit-reflexion-chips button[data-typ='rechenfehler']")
+        tipp = page.text_content("#reflexionTipp")
+        assert tipp and "Zwischenschritte" in tipp, \
+            f"{gym_file}: Reflexions-Tipp fehlt ({tipp!r})"
+        assert page.locator(
+            ".fit-reflexion-chips button.selected").count() == 1
