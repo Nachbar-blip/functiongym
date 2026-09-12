@@ -166,6 +166,13 @@ header p {
     margin: 10px 0;
 }
 
+/* Lange Display-Formeln scrollen auf Mobilgeräten statt zu überlaufen */
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+}
+
 /* ===== Theorie-Karten (Technik-Phase) ===== */
 
 .fit-theorie {
