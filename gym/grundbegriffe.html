@@ -132,7 +132,7 @@ const AUFGABEN = [
     korrekt: 0,
     tipp: 'Linientest: Jede Parallele zur y-Achse darf den Graphen höchstens einmal schneiden.',
     loesungsweg: 'Die Parabel besteht den Linientest: Jede senkrechte Linie schneidet sie genau einmal — Funktion ✓. Den Kreis schneidet eine senkrechte Linie durch sein Inneres zweimal ✗. Die senkrechte Gerade \\(x = 3\\) wird von der Linie \\(x = 3\\) sogar in unendlich vielen Punkten getroffen ✗.' },
-  { id: 2, stufe: 1, typ: 'zuordnung',
+  { id: 2, stufe: 2, typ: 'zuordnung',
     frage: 'Ordne jedem Funktionsterm seinen maximalen Definitionsbereich zu.',
     paare: [
       { links: '\\(f(x) = \\sqrt{x - 2}\\)', rechts: '\\(D = [2\\,;\\,\\infty[\\)' },
@@ -171,7 +171,7 @@ const AUFGABEN = [
     tipp: '„Eindeutig" heißt: pro Stelle genau ein Funktionswert. Prüfe jede Aussage einzeln — und achte darauf, ob Stelle und Funktionswert richtig herum verwendet werden.',
     loesungsweg: 'Wahr sind drei Aussagen: Eindeutigkeit gehört zur Definition; \\(f(2) = 9\\) heißt Stelle \\(2\\), Funktionswert \\(9\\), also Punkt \\((2\\,|\\,9)\\); und z. B. bei \\(f(x) = x^2\\) gilt \\(f(-2) = f(2) = 4\\) — erlaubt. Falsch: \\((9\\,|\\,2)\\) vertauscht Stelle und Wert, und ein Kreis fällt beim Linientest durch.' },
   { id: 6, stufe: 1, typ: 'numerisch',
-    frage: 'Die Wertetabelle gehört zu einer linearen Funktion: \\(\\begin{array}{c|c|c|c|c} x & 0 & 1 & 2 & 3 \\\\ \\hline f(x) & 1 & 3 & 5 & \\;?\\; \\end{array}\\) Bestimme den fehlenden Wert \\(f(3)\\).',
+    frage: 'Die Wertetabelle gehört zu einer linearen Funktion: $$\\begin{array}{c|c|c|c|c} x & 0 & 1 & 2 & 3 \\\\ \\hline f(x) & 1 & 3 & 5 & \\;?\\; \\end{array}$$ Bestimme den fehlenden Wert \\(f(3)\\).',
     loesung: 7,
     tipp: 'Bei einer linearen Funktion wächst \\(f(x)\\) bei jedem Schritt um denselben Betrag. Um wie viel wächst es hier pro Schritt?',
     loesungsweg: 'Von Spalte zu Spalte wächst \\(f(x)\\) immer um \\(2\\) (von \\(1\\) auf \\(3\\) auf \\(5\\)). Also \\(f(3) = 5 + 2 = 7\\). (Die Funktion ist \\(f(x) = 2x + 1\\), Probe: \\(2 \\cdot 3 + 1 = 7\\).)' },
@@ -189,9 +189,9 @@ const AUFGABEN = [
   { id: 8, stufe: 2, typ: 'mc',
     frage: 'Welche Symmetrie hat der Graph von \\(f(x) = x^3 - 4x\\)?',
     optionen: [
-      'Punktsymmetrisch zum Ursprung, denn \\(f(-x) = -x^3 + 4x = -f(x)\\)',
-      'Achsensymmetrisch zur y-Achse, denn \\(f(-x) = x^3 - 4x = f(x)\\)',
-      'Keine Symmetrie, denn \\(f(-x) = x^3 + 4x\\)'
+      'Punktsymmetrisch zum Ursprung',
+      'Achsensymmetrisch zur y-Achse',
+      'Keine Symmetrie'
     ],
     korrekt: 0,
     tipp: 'Setze \\(-x\\) ein und schau, ob am Ende \\(f(x)\\), \\(-f(x)\\) oder keines von beiden herauskommt. Sieh dir dazu die Exponenten an.',
@@ -206,7 +206,7 @@ const AUFGABEN = [
     ],
     tipp: 'Zerlege jede Beschreibung in ihre Bausteine und übersetze sie der Reihe nach. Achte darauf, worauf sich das letzte Wort bezieht — „Hälfte des Nachfolgers" ist nicht „Nachfolger der Hälfte".',
     loesungsweg: '„Dreifaches vermindert um 1": \\(3x - 1\\). „Quadrat vermehrt um 2": \\(x^2 + 2\\). „Hälfte des Nachfolgers": erst \\(x + 1\\), dann halbieren, also \\(\\frac{x+1}{2}\\). „Kehrwert": \\(\\frac{1}{x}\\).' },
-  { id: 10, stufe: 2, typ: 'numerisch',
+  { id: 10, stufe: 1, typ: 'numerisch',
     frage: 'Gegeben ist \\(f(x) = x^2 - 5\\). Bestimme die positive Stelle \\(x\\) mit \\(f(x) = 4\\).',
     loesung: 3,
     tipp: 'Setze den Funktionsterm gleich \\(4\\) und löse nach \\(x\\) auf. Gesucht ist nur die positive Lösung.',
