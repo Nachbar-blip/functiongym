@@ -205,7 +205,18 @@ const AUFGABEN = [
     ],
     korrekt: 0,
     tipp: 'Waagerechte Verschiebungen greifen im Argument an, nicht hinter dem Sinus — und das Vorzeichen dort fühlt sich „verkehrt herum“ an.',
-    loesungsweg: 'Verschiebung um \\(c = \\frac{\\pi}{2}\\) nach rechts: \\(y = \\sin\\bigl(x - \\frac{\\pi}{2}\\bigr)\\). Achtung bei den Distraktoren: \\(\\sin\\bigl(x + \\frac{\\pi}{2}\\bigr)\\) verschiebt nach <em>links</em> (das ergibt gerade \\(\\cos(x)\\)), \\(\\sin(x) - \\frac{\\pi}{2}\\) verschiebt nach <em>unten</em>. Die richtige Funktion ist übrigens \\(-\\cos(x)\\) — nicht \\(\\cos(x)\\).' }
+    loesungsweg: 'Verschiebung um \\(c = \\frac{\\pi}{2}\\) nach rechts: \\(y = \\sin\\bigl(x - \\frac{\\pi}{2}\\bigr)\\). Achtung bei den Distraktoren: \\(\\sin\\bigl(x + \\frac{\\pi}{2}\\bigr)\\) verschiebt nach <em>links</em> (das ergibt gerade \\(\\cos(x)\\)), \\(\\sin(x) - \\frac{\\pi}{2}\\) verschiebt nach <em>unten</em>. Die richtige Funktion ist übrigens \\(-\\cos(x)\\) — nicht \\(\\cos(x)\\).' },
+  { id: 11, stufe: 2, typ: 'mc',
+    frage: 'Gib alle Winkel zwischen 0° und 360° an, für die gilt: \\(\\sin(x) = 0{,}5\\)',
+    optionen: [
+      '\\(x_1 = 30°\\) und \\(x_2 = 150°\\)',
+      'nur \\(x = 30°\\)',
+      '\\(x_1 = 30°\\) und \\(x_2 = 210°\\)',
+      '\\(x_1 = 60°\\) und \\(x_2 = 120°\\)'
+    ],
+    korrekt: 0,
+    tipp: 'Der Taschenrechner liefert nur einen Winkel. Die Sinuskurve ist aber spiegelsymmetrisch zur senkrechten Linie durch ihr Maximum: Zwischen \\(0°\\) und \\(180°\\) gibt es zu jedem positiven Sinuswert zwei Winkel.',
+    loesungsweg: 'Der Taschenrechner gibt \\(x_1 = \\arcsin(0{,}5) = 30°\\). Die Sinuskurve ist symmetrisch zu \\(x = 90°\\), also ist \\(x_2 = 180° - 30° = 150°\\) die zweite Lösung. Bei \\(210°\\) und \\(330°\\) ist der Sinus negativ (\\(-0{,}5\\)), diese Winkel scheiden aus.' }
 ];
 </script>
 <script src="../fit-engine.js"></script>
